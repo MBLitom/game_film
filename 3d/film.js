@@ -1,5 +1,6 @@
 import * as THREE from "../vendor/three.module.js";
 import {GLTFLoader} from "../vendor/GLTFLoader.js";
+import {MeshoptDecoder} from "../vendor/meshopt_decoder.module.js";
 import {BEATS, initialStoryState, evolveStory} from "../story-engine.mjs";
 
 /**
@@ -268,7 +269,7 @@ class Performer{
  }
 }
 async function loadPerformer(name){
- const loader=new GLTFLoader();
+ const loader=new GLTFLoader().setMeshoptDecoder(MeshoptDecoder);
  const url="../public/models/"+name+".glb";
  const glb=await loader.loadAsync(url);
  if(!glb.scene||!glb.scene.children.length)throw Error("GLB missing actual geometry "+name);
