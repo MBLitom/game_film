@@ -328,7 +328,9 @@ function react(beat,id){
 function startStory(){
  runId++;choiceState=initialStoryState();
  $("end").hidden=true;$("opening").hidden=true;$("fatal").hidden=true;
- sky.root.visible=true;starModel.root.visible=false;sky=sky.name==="sky_star"?firstSky:sky;
+ if(firstSky) sky=firstSky;
+ sky.root.visible=true;
+ starModel.root.visible=false;
  setRoom("default");clearChoices();
  voiceOn=$("sound").getAttribute("aria-pressed")!=="false";
  state="intro";chapter("EPISODE 01 · THE DRESSING ROOM");
