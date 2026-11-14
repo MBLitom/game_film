@@ -21,6 +21,7 @@ point.position.set(3,5,8);
 scene.add(point);
 const propLayer=new THREE.Group();scene.add(propLayer);
 let entries=[],clickables=[],activeDrag=null,phaseState=beginEpisode(),allowVoice=true;
+const availableClips=new Set();
 let narrationTimer=null,editTime=0,renderingActive=true;
 const clock=new THREE.Clock();
 const mat=(color)=>new THREE.MeshStandardMaterial({color,roughness:.46,metalness:.22,side:THREE.DoubleSide});
@@ -194,6 +195,10 @@ function playCurrent(){
   setupEditor(phaseState.phase);return;
  }
  validateContinuity(phaseState);
+ if(!availableClips.has(clip)){
+   showError("The next original movie shot ("+clip+") is not available yet. This is a preview, not a complete episode.");
+   return;
+ }
  sceneLabel.textContent="EPISODE 01 · "+phaseState.phase.replaceAll("_"," ").toUpperCase();
  subtitles.textContent="";
  hint.textContent="";
@@ -266,8 +271,11 @@ async function checkClips(){
    return res.ok && !type.includes("text/html");
   }catch{return false;}
  }));
- if(clips.every(Boolean)){
+ REQUIRED_ASSETS.forEach((filename,i)=>{if(clips[i])availableClips.add(filename);});
+ if(availableClips.has("intro.mp4")){
   $("start").disabled=false;
+  const footnote=document.querySelector(".footnote");
+  if(footnote && !clips.every(Boolean))footnote.textContent="Preview only: "+availableClips.size+"/4 original shots available. The story is still in production.";
  }else{
   $("opening").hidden=true;
   $("missing").hidden=false;
