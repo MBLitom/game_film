@@ -15,6 +15,18 @@ Google lists a Free tier for Gemini 3.1 Flash-Lite. Google free-tier prompts may
 
 Tripo's developer docs mention initial **300 API trial credits within two weeks**. Its Studio free credits are separate. Check the Tripo dashboard for actual API trial balance and expiry. The API balance alone does not distinguish free promotional credits from purchased credits.
 
+## Recommended: connect the two keys from your phone using GitHub Actions Secrets
+
+The safest route for the public GAME FILM repository is to put BOTH keys into **private repository secrets**. No keys in ChatGPT, issues, URLs, screenshots, .env commits or browser JavaScript.
+
+1. Open https://github.com/MBLitom/game_film/settings/secrets/actions
+2. Add exactly these two repository secrets: `GEMINI_API_KEY` (Google AI Studio) and `TRIPO_API_KEY` (Tripo Developer Console).
+3. Open https://github.com/MBLitom/game_film/actions/workflows/ai-producer.yml
+4. Select **Run workflow → verify_keys → Run workflow**. This does only two read-only requests: Gemini model metadata and Tripo account balance. No generation or credit usage.
+5. If both verify successfully, the same manual workflow can be run with `draft_scene`, provided you separately check that Google key is from a **Free-tier project** and tick `free_tier_confirmed`. The resulting JSON is attached to the workflow run for 1 day.
+
+No scheduled triggers, no Oracle usage, no Hetzner workloads, no paid runners. Standard GitHub-hosted runners are free for a public repo. The workflow **does not generate a Tripo GLB** and **does not prove trial credits are free**; that requires separate confirmation before a task.
+
 ## Offline / zero-cost safety
 
 Both API tools default to **dry-run only**. No packages, paid API fallback, automated jobs or key storage. Node.js 22+.
