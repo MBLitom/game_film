@@ -1,0 +1,43 @@
+name: GAME FILM - Google Flow cinema player smoke (free)
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/smoke-cinema.yml
+      - cinema/**
+      - tools/smoke-cinema.mjs
+      - tests/cinema-story.test.mjs
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: game-film-cinema-test
+  cancel-in-progress: true
+
+jobs:
+  test-cinema:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - name: Check out project
+        uses: actions/checkout@v4
+      - name: Verify no-cost deterministic narrative
+        run: node --test tests/cinema-story.test.mjs
+      - name: Install free browser smoke dependency
+        run: |
+          command -v ffmpeg
+          command -v google-chrome
+          npm install --no-save --no-package-lock --ignore-scripts --no-audit --no-fund playwright-core
+      - name: Test missing real Flow clips and mobile cinema interactions
+        run: node tools/smoke-cinema.mjs
+      - name: Upload transient interaction screenshots for review
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: game-film-cinema-interaction-ci-only
+          path: screenshots/cinema-*.png
+          retention-days: 1
+          if-no-files-found: warn
