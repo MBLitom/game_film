@@ -17,9 +17,9 @@ async function main(){
  await page.goto(base+"/cinema/?smoke=1",{waitUntil:"networkidle",timeout:30000});
  await page.locator("#missing").waitFor({state:"visible",timeout:15000});
  assert.equal(await page.locator("#start").isDisabled(),true);
- console.log("PASS: cinema refuses to claim Google Flow clips exist before import");
+ console.log("PASS: cinema refuses to claim source footage exists before import");
 
- const folder="public/flow/ep01";
+ const folder="public/film/ep01";
  await mkdir(folder,{recursive:true});
  const clips=["intro","outfit_ok","room_ok","empathy_ok"];
  const ffmpeg=spawnSync("ffmpeg",["-hide_banner","-loglevel","error","-y","-f","lavfi","-i","color=c=#402b5b:s=384x640:r=2","-t","20","-c:v","libx264","-preset","ultrafast","-pix_fmt","yuv420p","-movflags","+faststart","/tmp/game-film-test-pattern.mp4"],{stdio:"pipe",timeout:30000});
