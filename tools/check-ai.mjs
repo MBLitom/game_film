@@ -7,6 +7,10 @@ export async function checkProviders({geminiKey, tripoKey, fetchImpl = fetch} = 
   if (!geminiKey || !tripoKey) {
     throw new Error("Missing GEMINI_API_KEY or TRIPO_API_KEY in repository secrets. No network requests sent.");
   }
+  const trimmedTripoKey = tripoKey.trim();
+  if (trimmedTripoKey.startsWith("tcli_")) {
+    throw new Error("TRIPO_API_KEY contains a Client ID, not an API Key. Create an API Key in Tripo Developer Console; no requests sent.");
+  }
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 18000);
   try {
@@ -18,9 +22,11 @@ export async function checkProviders({geminiKey, tripoKey, fetchImpl = fetch} = 
 
     const tripoResponse = await fetchImpl(
       "https://openapi.tripo3d.ai/v3/account/balance",
-      { method: "GET", headers: {Authorization: "Bearer " + tripoKey}, signal: controller.signal }
+      { method: "GET", headers: {Authorization: "Bearer " + trimmedTripoKey}, signal: controller.signal }
     );
-    if (!tripoResponse.ok) throw new Error("Tripo key verification failed (HTTP " + tripoResponse.status + ").");
+    if (!tripoResponse.ok) throw new Error(tripoResponse.status === 401
+      ? "Tripo returned HTTP 401. Confirm TRIPO_API_KEY is the API Key (normally starts tsk_), not the Client ID (tcli_); re-save the GitHub secret."
+      : "Tripo key verification failed (HTTP " + tripoResponse.status + ").");
 
     const balance = await tripoResponse.json();
     if (balance.code !== 0 || !Number.isFinite(balance.data?.balance)) {
