@@ -15,6 +15,8 @@ EMMA: fictional 12-year-old friend, slightly taller, chin-length ginger bob with
 
 LOCATION: realistic pastel-lilac family dressing studio with light oak plank floor, large oval mirror, cream bench, right-side doorway, daylight window on camera-left. After the child chooses a GALAXY party theme, the SAME architectural space and same anchor points are retained; decorations change to violet and cyan LED accents, ceiling stars and birthday-party space ornaments.
 
+DEFAULT FRAME: 9:16 PORTRAIT 720p, full-screen Android cinema; place both actresses in the central safe frame, with natural close-ups and cinematic cuts. No landscape master for the mobile-first pilot. Do not crop a 16:9 image down to a tiny central strip.
+
 All shots: photorealistic family-movie photography, believable young actors, natural micro-expressions, physically convincing wardrobe and hair, age-appropriate, varied lens and camera angles, real environment continuity. No plastic skin, no video-game graphics, no frozen humans, no unnatural hands, no cartoon aesthetic, no captions or logos. Never imitate a public figure or an existing child influencer.
 
 Create named SKY and EMMA Characters / Ingredients in Google Flow; keep using them. Reuse frames from accepted shots when compatible with your selected free model.
