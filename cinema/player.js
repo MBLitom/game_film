@@ -2,7 +2,7 @@ import * as THREE from "../vendor/three.module.js";
 import {BEATS} from "../story-engine.mjs";
 import {beginEpisode,afterVideo,chooseStory,currentClip,REQUIRED_ASSETS,validateContinuity} from "./story-playback.mjs";
 
-// Cinematic source material is GENERATED OFFLINE in Flow.
+// Cinematic source material is GENERATED OFFLINE in a licensed video tool (Flow, Kling, etc.).
 // A single actor identity and costume are enforced by the approved clip filenames.
 // Here Three.js is used ONLY for temporary in-frame child interaction.
 const $=id=>document.getElementById(id);
@@ -197,7 +197,7 @@ function playCurrent(){
  sceneLabel.textContent="EPISODE 01 · "+phaseState.phase.replaceAll("_"," ").toUpperCase();
  subtitles.textContent="";
  hint.textContent="";
- const url="../public/flow/ep01/"+clip;
+ const url="../public/film/ep01/"+clip;
  if(!video.src.endsWith("/"+clip))video.src=url;
  video.currentTime=0;
  const p=video.play();
@@ -261,7 +261,7 @@ draw();
 async function checkClips(){
  const clips=await Promise.all(REQUIRED_ASSETS.map(async filename=>{
   try{
-   const res=await fetch("../public/flow/ep01/"+filename,{method:"HEAD",cache:"no-cache"});
+   const res=await fetch("../public/film/ep01/"+filename,{method:"HEAD",cache:"no-cache"});
    const type=res.headers.get("content-type")||"";
    return res.ok && !type.includes("text/html");
   }catch{return false;}
