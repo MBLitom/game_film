@@ -40,9 +40,15 @@ jobs:
         working-directory: /tmp/ara-cast
         run: |
           npm ci --no-audit --no-fund
-          # MakeHuman's documented primary mirror, reachable by GitHub runners.
-          # The original Ara URL currently times out; do not change upstream licensing.
-          sed -i 's|https://files.makehumancommunity.org/asset_packs/|https://files2.makehumancommunity.org/asset_packs/|' scripts/setup-assets.ts
+          # Download the official CC0 pack using curl's system networking stack.
+          # Node's undici fetch fails to connect to both original and mirror domains on runner.
+          mkdir -p vendor/dl vendor/sys
+          curl --ipv4 --fail --location --retry 3 --retry-delay 10 \
+            --connect-timeout 35 --max-time 1200 \
+            https://files2.makehumancommunity.org/asset_packs/makehuman_system_assets/makehuman_system_assets_cc0.zip \
+            --output vendor/dl/sys.zip
+          unzip -qq vendor/dl/sys.zip -d vendor/sys
+          test -d vendor/sys/skins
           npm run setup-assets
       - name: Export original SKY and EMMA rigged GLB models
         working-directory: /tmp/ara-cast
