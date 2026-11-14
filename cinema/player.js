@@ -273,4 +273,17 @@ async function checkClips(){
   $("missing").hidden=false;
  }
 }
+if(new URLSearchParams(location.search).has("smoke")){
+ window.__GF_CINEMA_TEST__=Object.freeze({
+  phase:()=>phaseState.phase,
+  choices:()=>entries.map(({choice,root})=>{
+   const world=root.getWorldPosition(new THREE.Vector3());
+   world.y+=.10;
+   world.project(camera);
+   return {id:choice.id,x:Math.round((world.x+1)/2*innerWidth),y:Math.round((1-world.y)/2*innerHeight)};
+  }),
+  currentClip:()=>currentClip(phaseState),
+  story:()=>JSON.parse(JSON.stringify(phaseState.story))
+ });
+}
 checkClips();
