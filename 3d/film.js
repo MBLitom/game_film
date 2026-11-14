@@ -442,4 +442,31 @@ function animate(){
  renderer.render(scene,camera);
 }
 animate();
+if(new URLSearchParams(location.search).has("smoke")){
+  Object.defineProperty(window,"__GF_TEST__",{
+    value:Object.freeze({
+      phase:()=>state,
+      actors:()=>({
+        loaded:Boolean(sky&&emma&&starModel),
+        skins:[sky,emma,starModel].filter(Boolean).map(actor=>{
+          let skinned=0,morphTargets=0;
+          actor.model.traverse(o=>{
+            if(o.isSkinnedMesh)skinned++;
+            if(o.morphTargetInfluences)morphTargets+=o.morphTargetInfluences.length;
+          });
+          return {name:actor.name,skinned,morphTargets};
+        })
+      }),
+      choices:()=>stageOptions.map(({root,choice})=>{
+        const v=root.getWorldPosition(new THREE.Vector3());
+        v.y+=.36;
+        v.project(camera);
+        return {id:choice.id,x:Math.round((v.x+1)*.5*innerWidth),y:Math.round((1-v.y)*.5*innerHeight)};
+      }),
+      roomIsGalaxy:()=>partyDecor.visible,
+      rendererVersion:()=>renderer.getContext().getParameter(renderer.getContext().VERSION)
+    }),
+    configurable:false
+  });
+}
 prepareCast();
