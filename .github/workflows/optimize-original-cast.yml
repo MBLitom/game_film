@@ -13,7 +13,7 @@ permissions:
 
 concurrency:
   group: game-film-optimize-cast
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   optimize:
@@ -22,7 +22,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Install free open-source GLB transform tools
-        run: npm install --no-save --no-package-lock --ignore-scripts --no-audit --no-fund @gltf-transform/core @gltf-transform/functions
+        run: npm install --no-save --no-package-lock --ignore-scripts --no-audit --no-fund @gltf-transform/core @gltf-transform/functions @gltf-transform/extensions meshoptimizer
       - name: Trim unrelated game animations and repack GLB actors
         run: |
           node tools/optimize-cast.mjs public/models/sky_preparation.glb public/models/sky_star.glb public/models/emma.glb
