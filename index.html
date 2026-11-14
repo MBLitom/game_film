@@ -1,77 +1,29 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <meta name="theme-color" content="#060812">
-  <meta name="description" content="Game Film — an immersive interactive film prototype by MB Litom. Real footage, occasional player decisions.">
-  <title>GAME FILM · Friends First | MB Litom</title>
-  <link rel="stylesheet" href="./styles.css?v=3">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#100c20">
+<meta name="description" content="GAME FILM: original interactive 3D cinema by MB Litom. Watch Friends First and influence the real virtual set.">
+<link rel="icon" href="data:,">
+<link rel="canonical" href="https://mblitom.github.io/game_film/3d/">
+<meta http-equiv="refresh" content="0;url=./3d/">
+<title>GAME FILM — Original 3D Cinema</title>
+<style>
+html,body{height:100%;margin:0;background:#110d20;color:#fff;font:16px/1.5 system-ui,sans-serif}
+main{min-height:100%;display:grid;place-content:center;gap:14px;padding:22px;text-align:center}
+a{color:#ffb4dd}
+</style>
+<script>
+const destination=new URL("./3d/"+location.search+location.hash,location.href);
+if(destination.pathname!==location.pathname)location.replace(destination.href);
+</script>
 </head>
 <body>
-<main id="film-app" aria-label="Immersive interactive film">
-  <video id="film" playsinline webkit-playsinline preload="metadata" muted disablepictureinpicture aria-label="Cinematic story footage">
-    <source src="./media/hair.mp4" type="video/mp4">
-    <source src="./media/hair.webm" type="video/webm">
-  </video>
-  <canvas id="depth-canvas" aria-hidden="true"></canvas>
-  <div id="grade" aria-hidden="true"></div>
-  <div id="room-set" class="room-set" aria-hidden="true"><div class="set-light set-light--left"></div><div class="set-light set-light--right"></div><div class="set-stars"></div><div class="set-floor"></div></div>
-  <header class="top-bar">
-    <a class="litom" href="https://mblitom.com" target="_blank" rel="noopener" aria-label="MB Litom website"><span class="litom-mark">L</span><span>GAME FILM</span></a>
-    <div class="top-right">
-      <span class="episode" id="episode-label">EPISODE 01</span>
-      <button id="sound-btn" class="icon-button" type="button" title="Toggle English narration" aria-label="Turn English narration on or off" aria-pressed="false">🔇</button>
-    </div>
-  </header>
-  <div id="scene-indicator" class="scene-indicator" aria-live="polite">FRIENDS FIRST · THE THEME SWITCH</div>
-  <div id="subtitles" class="subtitles" role="status" aria-live="polite" aria-atomic="true"></div>
-
-  <section id="opening" class="opening" aria-label="Play film">
-    <div class="opening-inner">
-      <span class="opening-kicker">MB LITOM PRESENTS · INTERACTIVE FILM PROTOTYPE</span>
-      <h1>FRIENDS <em>FIRST</em></h1>
-      <p>Watch the story. Help the characters choose, decorate and listen to each other. Your choices shape the scene.</p>
-      <button id="start" class="big-button" type="button">▶ WATCH THE FILM</button>
-      <p class="opening-note">Prototype: temporary real footage. Original filmed characters are still in development.</p>
-    </div>
-  </section>
-
-  <section id="choice-overlay" class="choice-overlay" hidden aria-label="Interactive movie moment">
-    <div class="choice-shade"></div>
-    <div class="choice-panel">
-      <div class="choice-badge" id="choice-badge">YOUR TURN · HELP SKY</div>
-      <h2 id="choice-title">Choose a party look!</h2>
-      <p id="choice-description">Sky needs a style before the story can continue.</p>
-      <div class="choice-options" id="choice-options" role="group" aria-label="Choose an action"></div>
-      <p id="choice-response" class="choice-response" role="status" aria-live="polite"></p>
-      <p class="touch-hint" id="touch-hint">Try different choices. The characters will help you find what works.</p>
-      <button id="continue" class="continue-button" type="button" disabled>CONTINUE THE FILM →</button>
-    </div>
-  </section>
-
-  <section id="ending" class="ending" hidden aria-label="End of episode">
-    <div class="ending-inner">
-      <span class="opening-kicker">EPISODE 01 · STORY PREVIEW COMPLETE</span>
-      <h2>TO BE<br><em>CONTINUED...</em></h2>
-      <p>You helped with fashion, the room, and a friend’s feelings. Original filmed scenes and character continuity are still to be produced.</p>
-      <button id="again" class="big-button" type="button">↻ WATCH AGAIN</button>
-      <button id="credits-btn" class="text-button" type="button">Footage credits & prototype notes</button>
-    </div>
-  </section>
-  <dialog id="credits">
-    <div class="credits-inner">
-      <h2>Prototype footage & limitations</h2>
-      <p>This is a full-screen cinematic interaction prototype demonstrating a storyboard and an educational choice engine, not a finished episode. The stock footage shows real people, but does not portray the fictional character “Sky”. The digital set decorations and English fictional dialogue are illustrative, not attached to or spoken by the filmed performers. No original film cast, room reconstruction or synchronized facial reactions have been produced yet.</p>
-      <p><a href="https://commons.wikimedia.org/wiki/File:Hair_being_plaited_with_careful_skill.webm" target="_blank" rel="noopener">Hair being plaited with careful skill</a> by Leticia Nabunje; <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener">CC BY-SA 4.0</a>. Resized/replayed in the prototype; source footage unchanged.</p>
-      <p><a href="https://commons.wikimedia.org/wiki/File:DJ_mixes_music_while_people_enjoy_beats.webm" target="_blank" rel="noopener">DJ mixes music while people enjoy beats</a> by Leticia Nabunje; <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener">CC BY-SA 4.0</a>. Resized/replayed in the prototype; source footage unchanged.</p>
-      <p>Code © MB Litom. No account, tracking, ads, microphone or camera access. The prototype intentionally does not impersonate the people shown in the sample footage.</p>
-      <button type="button" id="credits-close" class="big-button">CLOSE</button>
-    </div>
-  </dialog>
-  <div class="film-credit" id="film-credit">PROTOTYPE · RIGHTS-CLEARED FOOTAGE · ORIGINAL FILM PENDING</div>
-  <div class="error-message" id="error" hidden role="alert"></div>
+<main>
+<strong>GAME FILM · MB LITOM</strong>
+<p>Opening the original 3D interactive film…</p>
+<a href="./3d/">Open FRIENDS FIRST in 3D</a>
 </main>
-<script type="module" src="./main.js?v=3"></script>
 </body>
 </html>
