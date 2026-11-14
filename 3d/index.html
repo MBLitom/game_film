@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#100c20">
+<meta name="description" content="GAME FILM · Friends First — original interactive 3D cinema by MB Litom.">
+<title>GAME FILM — Friends First · Original 3D</title>
+<link rel="stylesheet" href="./film.css?v=1">
+<script type="importmap">
+{"imports":{"three":"../vendor/three.module.js"}}
+</script>
+</head>
+<body>
+<main id="experience" aria-label="Friends First interactive three-dimensional film">
+  <canvas id="world" aria-label="A real 3D film scene with original characters and an interactive set"></canvas>
+  <header class="hud">
+    <a class="brand" href="https://mblitom.com" target="_blank" rel="noopener" aria-label="MB Litom"><span class="mark">L</span> GAME FILM</a>
+    <span class="chapter" id="chapter">EPISODE 01 · FRIENDS FIRST</span>
+    <button class="sound" id="sound" aria-label="Toggle English voice" title="Toggle English voice" aria-pressed="true">🔊</button>
+  </header>
+  <div class="subtitle" id="subtitle" aria-live="polite" aria-atomic="true"></div>
+  <div class="director-note" id="director-note" aria-live="polite"></div>
+  <div class="film-bar film-bar-top" aria-hidden="true"></div><div class="film-bar film-bar-bottom" aria-hidden="true"></div>
+
+  <section class="overlay" id="opening">
+    <div class="opening-content">
+      <p class="eyebrow">MB LITOM PRESENTS · ORIGINAL 3D INTERACTIVE CINEMA</p>
+      <h1>FRIENDS<br><em>FIRST</em></h1>
+      <p class="lead">Your friends need a mini-director. Help Sky choose her outfit, change the real 3D room, and find a kind way to make things right.</p>
+      <button id="start" class="play" type="button">▶ START THE FILM</button>
+      <p class="disclosure">First technical scene · original 3D cast · not yet photorealistic</p>
+    </div>
+  </section>
+
+  <section class="overlay" id="end" hidden>
+    <div class="opening-content">
+      <p class="eyebrow">EPISODE 01 · SCENE COMPLETE</p>
+      <h2>YOU HELPED<br><em>THE FRIENDS!</em></h2>
+      <p class="lead">A little patience and listening made the party brighter.</p>
+      <button id="again" class="play" type="button">↻ WATCH AGAIN</button>
+      <p class="disclosure">3D technical pilot · new film scenes and acting in development</p>
+    </div>
+  </section>
+
+  <aside class="loading" id="loading" role="status" aria-live="polite">
+    <div class="spinner" aria-hidden="true"></div>
+    <strong>Preparing the original 3D actors…</strong>
+    <small id="load-details">Loading character models and film set</small>
+  </aside>
+
+  <aside class="fatal" id="fatal" role="alert" hidden>
+    <strong>The original 3D scene could not start.</strong>
+    <p id="fatal-detail"></p>
+    <button type="button" id="retry" class="play">RETRY</button>
+  </aside>
+</main>
+<script type="module" src="./film.js?v=1"></script>
+</body>
+</html>
