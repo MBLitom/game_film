@@ -29,3 +29,26 @@ test("provider errors do not leak keys", async () => {
     return true;
   });
 });
+
+test("Tripo Client ID is rejected before network; no secret value is printed", async () => {
+  let calls=0;
+  await assert.rejects(
+    ()=>checkProviders({geminiKey:"sample-google",tripoKey:"tcli_123_not_a_real_key",fetchImpl:()=>{calls++;}}),
+    /Client ID, not an API Key/
+  );
+  assert.equal(calls,0);
+});
+test("Tripo 401 gives actionable guidance without leaking a key", async () => {
+  const secret="tsk_secret_example";
+  let calls=0;
+  const fetchImpl=async()=> {
+    calls++;
+    if(calls===1) return {ok:true,status:200};
+    return {ok:false,status:401};
+  };
+  await assert.rejects(
+    ()=>checkProviders({geminiKey:"example",tripoKey:secret,fetchImpl}),
+    error=> { assert.match(error.message,/HTTP 401/); assert.equal(error.message.includes(secret),false); return true; }
+  );
+  assert.equal(calls,2);
+});
