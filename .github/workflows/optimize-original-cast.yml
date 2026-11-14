@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - .github/workflows/optimize-original-cast.yml
+      - tools/optimize-cast.mjs
   workflow_dispatch:
 
 permissions:
