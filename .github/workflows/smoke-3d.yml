@@ -1,0 +1,37 @@
+name: GAME FILM - Browser test actual 3D film (free)
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/smoke-3d.yml
+      - tools/smoke-3d.mjs
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: game-film-browser-smoke
+  cancel-in-progress: true
+
+jobs:
+  mobile-film:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - name: Use free browser automation without paid cloud APIs
+        run: |
+          which google-chrome
+          npm install --no-save --no-package-lock --no-audit --no-fund playwright-core
+      - name: Play complete original 3D episode with real GLB characters
+        run: node tools/smoke-3d.mjs
+      - name: Capture 3D episode frames for review (temporary)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: game-film-3d-browser-frames
+          path: screenshots/*.png
+          retention-days: 1
+          if-no-files-found: warn
