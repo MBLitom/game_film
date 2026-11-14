@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#060812">
   <meta name="description" content="Game Film — an immersive interactive film prototype by MB Litom. Real footage, occasional player decisions.">
-  <title>GAME FILM · The Theme Switch | MB Litom</title>
-  <link rel="stylesheet" href="./styles.css?v=2">
+  <title>GAME FILM · Friends First | MB Litom</title>
+  <link rel="stylesheet" href="./styles.css?v=3">
 </head>
 <body>
 <main id="film-app" aria-label="Immersive interactive film">
@@ -16,6 +16,7 @@
   </video>
   <canvas id="depth-canvas" aria-hidden="true"></canvas>
   <div id="grade" aria-hidden="true"></div>
+  <div id="room-set" class="room-set" aria-hidden="true"><div class="set-light set-light--left"></div><div class="set-light set-light--right"></div><div class="set-stars"></div><div class="set-floor"></div></div>
   <header class="top-bar">
     <a class="litom" href="https://mblitom.com" target="_blank" rel="noopener" aria-label="MB Litom website"><span class="litom-mark">L</span><span>GAME FILM</span></a>
     <div class="top-right">
@@ -23,16 +24,16 @@
       <button id="sound-btn" class="icon-button" type="button" title="Toggle English narration" aria-label="Turn English narration on or off" aria-pressed="false">🔇</button>
     </div>
   </header>
-  <div id="scene-indicator" class="scene-indicator" aria-live="polite">THE THEME SWITCH</div>
+  <div id="scene-indicator" class="scene-indicator" aria-live="polite">FRIENDS FIRST · THE THEME SWITCH</div>
   <div id="subtitles" class="subtitles" role="status" aria-live="polite" aria-atomic="true"></div>
 
   <section id="opening" class="opening" aria-label="Play film">
     <div class="opening-inner">
       <span class="opening-kicker">MB LITOM PRESENTS · INTERACTIVE FILM PROTOTYPE</span>
-      <h1>THE <em>THEME</em><br> SWITCH</h1>
-      <p>Meet the friends. Watch the story. When they need help, you're in the scene.</p>
+      <h1>FRIENDS <em>FIRST</em></h1>
+      <p>Watch the story. Help the characters choose, decorate and listen to each other. Your choices shape the scene.</p>
       <button id="start" class="big-button" type="button">▶ WATCH THE FILM</button>
-      <p class="opening-note">Real demonstration footage · original characters and film scenes are in development</p>
+      <p class="opening-note">Prototype: temporary real footage. Original filmed characters are still in development.</p>
     </div>
   </section>
 
@@ -42,12 +43,9 @@
       <div class="choice-badge" id="choice-badge">YOUR TURN · HELP SKY</div>
       <h2 id="choice-title">Choose a party look!</h2>
       <p id="choice-description">Sky needs a style before the story can continue.</p>
-      <div class="choice-options" id="choice-options" role="group" aria-label="Choose one style">
-        <button type="button" class="look" data-look="rose"><span class="look-symbol">🎀</span><span>ROSE POP</span></button>
-        <button type="button" class="look" data-look="star"><span class="look-symbol">⭐</span><span>STAR GLOW</span></button>
-        <button type="button" class="look" data-look="royal"><span class="look-symbol">👑</span><span>ROYAL FUN</span></button>
-      </div>
-      <p class="touch-hint">Tap the film near the hairstyle for a gentle reaction.</p>
+      <div class="choice-options" id="choice-options" role="group" aria-label="Choose an action"></div>
+      <p id="choice-response" class="choice-response" role="status" aria-live="polite"></p>
+      <p class="touch-hint" id="touch-hint">Try different choices. The characters will help you find what works.</p>
       <button id="continue" class="continue-button" type="button" disabled>CONTINUE THE FILM →</button>
     </div>
   </section>
@@ -56,7 +54,7 @@
     <div class="ending-inner">
       <span class="opening-kicker">EPISODE 01 · STORY PREVIEW COMPLETE</span>
       <h2>TO BE<br><em>CONTINUED...</em></h2>
-      <p>Real filmed performers, responsive styling and original scenes will replace the prototype footage.</p>
+      <p>You helped with fashion, the room, and a friend’s feelings. Original filmed scenes and character continuity are still to be produced.</p>
       <button id="again" class="big-button" type="button">↻ WATCH AGAIN</button>
       <button id="credits-btn" class="text-button" type="button">Footage credits & prototype notes</button>
     </div>
@@ -64,16 +62,16 @@
   <dialog id="credits">
     <div class="credits-inner">
       <h2>Prototype footage & limitations</h2>
-      <p>This is a full-screen cinematic interaction prototype, not a finished episode. The stock footage shows real people, but does not portray the fictional character “Sky”. The floating 3D accessory and English reactions are illustrative, not yet physically attached to a performer. No original film cast or synchronized facial reactions have been produced yet.</p>
+      <p>This is a full-screen cinematic interaction prototype demonstrating a storyboard and an educational choice engine, not a finished episode. The stock footage shows real people, but does not portray the fictional character “Sky”. The digital set decorations and English fictional dialogue are illustrative, not attached to or spoken by the filmed performers. No original film cast, room reconstruction or synchronized facial reactions have been produced yet.</p>
       <p><a href="https://commons.wikimedia.org/wiki/File:Hair_being_plaited_with_careful_skill.webm" target="_blank" rel="noopener">Hair being plaited with careful skill</a> by Leticia Nabunje; <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener">CC BY-SA 4.0</a>. Resized/replayed in the prototype; source footage unchanged.</p>
       <p><a href="https://commons.wikimedia.org/wiki/File:DJ_mixes_music_while_people_enjoy_beats.webm" target="_blank" rel="noopener">DJ mixes music while people enjoy beats</a> by Leticia Nabunje; <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener">CC BY-SA 4.0</a>. Resized/replayed in the prototype; source footage unchanged.</p>
       <p>Code © MB Litom. No account, tracking, ads, microphone or camera access. The prototype intentionally does not impersonate the people shown in the sample footage.</p>
       <button type="button" id="credits-close" class="big-button">CLOSE</button>
     </div>
   </dialog>
-  <div class="film-credit" id="film-credit">PROTOTYPE · STOCK FOOTAGE · NOT THE FINAL CAST</div>
+  <div class="film-credit" id="film-credit">PROTOTYPE · RIGHTS-CLEARED FOOTAGE · ORIGINAL FILM PENDING</div>
   <div class="error-message" id="error" hidden role="alert"></div>
 </main>
-<script type="module" src="./main.js?v=2"></script>
+<script type="module" src="./main.js?v=3"></script>
 </body>
 </html>
