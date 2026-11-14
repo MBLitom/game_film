@@ -48,12 +48,18 @@ async function main(){
   await page.click("#start");
   await waitState(page,"outfit",16000);
   await page.screenshot({path:"screenshots/3d-outfit-mobile.png",animations:"disabled"});
+  await clickChoice(page,"royal");
+  assert.equal(await page.evaluate(()=>window.__GF_TEST__.phase()),"outfit","Character must gently reject an unplanned costume");
   await clickChoice(page,"star");
   await waitState(page,"room",15000);
   await page.screenshot({path:"screenshots/3d-room-mobile.png",animations:"disabled"});
+  await clickChoice(page,"garden");
+  assert.equal(await page.evaluate(()=>window.__GF_TEST__.phase()),"room","Wrong party setting should not create another film branch");
   await clickChoice(page,"cosmic");
   await waitState(page,"feelings",15000);
   await page.waitForFunction(()=>window.__GF_TEST__.choices().length===3,undefined,{timeout:7000});
+  await clickChoice(page,"ignore");
+  assert.equal(await page.evaluate(()=>window.__GF_TEST__.phase()),"feelings","Friend stays upset until listened to");
   await clickChoice(page,"listen");
   await waitState(page,"ending",15000);
   assert.equal(await page.evaluate(()=>window.__GF_TEST__.roomIsGalaxy()),true);
