@@ -44,7 +44,7 @@ export async function optimizeOne(filename){
     throw new Error("Essential cinematic acting clips missing in "+filename);
   }
   await doc.transform(prune({keepLeaves:false}));
-  const output=input+".optimized";
+  const output=input+".optimized.glb";
   await io.write(output,doc);
   const after=(await stat(output)).size;
   if(after>=before || after===0)throw new Error("Optimisation failed to save bytes for "+filename);
