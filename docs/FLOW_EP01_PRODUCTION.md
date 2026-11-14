@@ -1,3 +1,11 @@
+> **2026-11-14: FLOW GENERATION BLOCK — IMPORTANT**
+>
+> Google Flow rejected the first prompt because the described actors were **photorealistic 11–12-year-old minors**. Do NOT repeatedly retry it or disguise the actresses' ages to bypass a safety filter. This is a provider restriction, not a claim that the ordinary family-story premise is harmful. The original characters' ages remain part of the project's creative brief; **we have not silently changed canon**.
+>
+> For a *separate technical realism test*, use clearly adult actresses (25+) in a family-friendly scene. That clip is a test only; do not publish it as a child-character episode or use it as a character reference for the original underage cast. See [FLOW_ADULT_CAMERA_TEST.md](FLOW_ADULT_CAMERA_TEST.md).
+>
+> If the project requires convincing underage actors, evaluate a different provider *whose terms explicitly permit that kind of benign generation*, or traditional filmed footage with guardian consent. Respect any platform safety restriction. Google says credits for safety-filtered generations are returned within an hour.
+>
 # GAME FILM — Google Flow original cinema production (EP01)
 
 Project in Flow: GAME FILM — FRIENDS FIRST — EPISODE 01.
