@@ -9,7 +9,9 @@
  *   npm install --no-save --no-package-lock @gltf-transform/core @gltf-transform/functions
  */
 import {NodeIO} from "@gltf-transform/core";
-import {prune} from "@gltf-transform/functions";
+import {EXTMeshoptCompression, KHRMeshQuantization} from "@gltf-transform/extensions";
+import {MeshoptEncoder, MeshoptDecoder} from "meshoptimizer";
+import {prune, meshopt} from "@gltf-transform/functions";
 import {rename,stat} from "node:fs/promises";
 import {resolve} from "node:path";
 
@@ -31,7 +33,9 @@ export const KEEP_NAMES = new Set([
 export async function optimizeOne(filename){
   const input=resolve(filename);
   const before=(await stat(input)).size;
-  const io=new NodeIO();
+  await Promise.all([MeshoptEncoder.ready, MeshoptDecoder.ready]);
+  const io=new NodeIO().registerExtensions([EXTMeshoptCompression,KHRMeshQuantization])
+    .registerDependencies({"meshopt.encoder":MeshoptEncoder,"meshopt.decoder":MeshoptDecoder});
   const doc=await io.read(input);
   const root=doc.getRoot();
   const animations=root.listAnimations();
@@ -43,7 +47,7 @@ export async function optimizeOne(filename){
      !retained.some(a=>a.getName()==="Talk with gestures")){
     throw new Error("Essential cinematic acting clips missing in "+filename);
   }
-  await doc.transform(prune({keepLeaves:false}));
+  await doc.transform(prune({keepLeaves:false}),meshopt({encoder:MeshoptEncoder,level:"medium"}));
   const output=input+".optimized.glb";
   await io.write(output,doc);
   const after=(await stat(output)).size;
