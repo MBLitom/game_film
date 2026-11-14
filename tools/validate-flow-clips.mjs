@@ -1,5 +1,5 @@
 /**
- * Validate original Google Flow MP4 downloads before publishing.
+ * Validate original AI-cinema MP4 downloads (Kling, Flow or other permitted provider) before publishing.
  * No network requests and no automatic upload, billing or modifications.
  * The generated clips must be visually reviewed for character consistency.
  */
@@ -8,12 +8,12 @@ import {spawnSync} from "node:child_process";
 import {resolve, join} from "node:path";
 import {REQUIRED_ASSETS} from "../cinema/story-playback.mjs";
 
-const directory=resolve(process.argv[2]||"public/flow/ep01");
+const directory=resolve(process.argv[2]||"public/film/ep01");
 let failed=false;
 for(const name of REQUIRED_ASSETS){
  const file=join(directory,name);
  try{
-  if(!existsSync(file))throw new Error("missing original Flow download");
+  if(!existsSync(file))throw new Error("missing original licensed video file");
   const size=statSync(file).size;
   if(size<100_000||size>150_000_000)throw new Error("unusual MP4 file size");
   const head=Buffer.alloc(12);
