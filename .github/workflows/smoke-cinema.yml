@@ -1,4 +1,4 @@
-name: GAME FILM - Google Flow cinema player smoke (free)
+name: GAME FILM - cinematic video player smoke (free)
 
 on:
   push:
@@ -33,7 +33,7 @@ jobs:
           command -v ffmpeg
           command -v google-chrome
           npm install --no-save --no-package-lock --ignore-scripts --no-audit --no-fund playwright-core
-      - name: Test missing real Flow clips and mobile cinema interactions
+      - name: Test missing real AI-cinema clips and mobile cinema interactions
         run: node tools/smoke-cinema.mjs
       - name: Upload transient interaction screenshots for review
         if: always()
