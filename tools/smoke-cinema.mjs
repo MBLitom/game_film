@@ -25,6 +25,21 @@ async function main(){
  const ffmpeg=spawnSync("ffmpeg",["-hide_banner","-loglevel","error","-y","-f","lavfi","-i","color=c=#402b5b:s=384x640:r=2","-t","20","-c:v","libx264","-preset","ultrafast","-pix_fmt","yuv420p","-movflags","+faststart","/tmp/game-film-test-pattern.mp4"],{stdio:"pipe",timeout:30000});
  if(ffmpeg.status!==0)throw Error("ffmpeg test pattern failed: "+String(ffmpeg.stderr).slice(0,300));
  const {copyFile}=await import("node:fs/promises");
+ // First-shot-only preview must be playable, without pretending the episode is complete.
+ await copyFile("/tmp/game-film-test-pattern.mp4",folder+"/intro.mp4");
+ await page.reload({waitUntil:"domcontentloaded"});
+ await page.waitForFunction(()=>!document.querySelector("#start").disabled,undefined,{timeout:15000});
+ assert.match(await page.locator(".footnote").textContent(),/1\/4 original shots available/);
+ await page.locator("#start").click();
+ await page.evaluate(()=>document.querySelector("#film").dispatchEvent(new Event("ended")));
+ await page.waitForFunction(()=>window.__GF_CINEMA_TEST__?.phase()==="outfit",undefined,{timeout:7000});
+ // When a later shot is missing, the player must display the truthful limitation.
+ const only=await page.evaluate(()=>window.__GF_CINEMA_TEST__.choices().find(x=>x.id==="star"));
+ assert.ok(only,"First-shot preview includes tactile 3D editing");
+ await page.touchscreen.tap(only.x,only.y);
+ await page.locator("#error").waitFor({state:"visible",timeout:7000});
+ assert.match(await page.locator("#error-text").textContent(),/not available yet/);
+ console.log("PASS: one real clip can be previewed; missing next shot is not fabricated");
  for(const name of clips)await copyFile("/tmp/game-film-test-pattern.mp4",folder+"/"+name+".mp4");
 
  await page.reload({waitUntil:"domcontentloaded"});
