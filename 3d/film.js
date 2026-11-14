@@ -199,14 +199,14 @@ function createChoices(beat){
  clearChoices();
  const optionData=BEATS[beat]?.choices||[];
  const portrait=innerWidth/innerHeight<.76;
- const spots=portrait?[-.84,0,.84]:beat==="outfit"?[-2.40,0,2.40]:[-2.35,0,2.35];
- const atZ=portrait?2.25:beat==="outfit"?2.1:1.9;
+ const spots=portrait?[-.59,0,.59]:beat==="outfit"?[-2.40,0,2.40]:[-2.35,0,2.35];
+ const atZ=portrait?1.15:beat==="outfit"?2.1:1.9;
  optionData.forEach((choice,i)=>{
   const root=beat==="outfit"
      ? dressOption(interactive,["#e78dc9","#8064dc","#e8b54c"][i],choice.label)
      : roomOption(interactive,["#ec9bbe","#6653d8","#e0b56b"][i],choice.label);
   root.position.set(spots[i],beat==="outfit"?.65:.63,atZ);
-  root.scale.setScalar(portrait?.55:beat==="outfit"?.85:1.05);
+  root.scale.setScalar(portrait ? .47 : (beat==="outfit" ? .85 : 1.05));
   root.userData={beat,choice:choice.id,baseY:root.position.y};
   root.traverse(obj=>{if(obj.isMesh){obj.userData.choiceRoot=root;pickable.push(obj);}});
   stageOptions.push({root,choice,beat});
@@ -315,9 +315,10 @@ async function prepareCast(){
     loadPerformer("sky_star"),
     loadPerformer("emma")
   ]);
-  sky=first.place(-1.35,-.35);
-  starModel=prepared;starModel.root.visible=false;starModel.place(-1.35,-.35);
-  emma=friend.place(1.3,-.48);
+  const actorX=innerWidth/innerHeight<.76 ? .72 : 1.35;
+  sky=first.place(-actorX,-.35);
+  starModel=prepared;starModel.root.visible=false;starModel.place(-actorX,-.35);
+  emma=friend.place(actorX,-.48);
   $("loading").hidden=true;
   $("start").disabled=false;
   state="ready";
