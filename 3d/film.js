@@ -273,7 +273,7 @@ class Performer{
  }
  speakMotion(words){
   // Approximate browser-side acting; this is NOT phoneme-aligned speech.
-  this.speechEnd=performance.now()/1000+Math.max(1.4,Math.min(7,words.split(/\\s+/).length*.39));
+  this.speechEnd=performance.now()/1000+Math.max(1.4,Math.min(7,words.trim().split(" ").length*.39));
  }
  place(x,z,yaw=0){this.root.position.set(x,0,z);this.root.rotation.y=yaw;return this;}
  gesture(name){
@@ -291,10 +291,10 @@ class Performer{
   this.setFace("eyeBlinkLeft",blink);
   this.setFace("eyeBlinkRight",blink);
   const speaking=performance.now()/1000<this.speechEnd;
-  const jaw=speaking?.12+.36*Math.abs(Math.sin(t*11.3+this.blinkPhase)):0;
+  const jaw = speaking ? (.12+.36*Math.abs(Math.sin(t*11.3+this.blinkPhase))) : 0;
   this.setFace("jawOpen",jaw);
-  this.setFace("viseme_aa",speaking?.12+.26*Math.abs(Math.sin(t*5.9)) : 0);
-  this.setFace("mouthSmile",this.name==="EMMA"?.17:.22);
+  this.setFace("viseme_aa",speaking ? (.12+.26*Math.abs(Math.sin(t*5.9))) : 0);
+  this.setFace("mouthSmile",this.name==="EMMA" ? .17 : .22);
  }
  dispose(){
   this.mixer?.stopAllAction();
