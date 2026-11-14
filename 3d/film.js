@@ -258,6 +258,10 @@ class Performer{
   this.model.scale.setScalar(scale);
   this.model.position.y=-bounds.min.y*scale;
   this.idleLook=0;
+  this.walkPath=null;
+  this.baseYaw=0;
+  this.idleAction=this.actions.idle||null;
+  this.walkAction=this.actions.walk||null;
   this.speechEnd=0;
   this.blinkPhase=Math.random()*2;
   this.faceMeshes=[];
@@ -275,7 +279,32 @@ class Performer{
   // Approximate browser-side acting; this is NOT phoneme-aligned speech.
   this.speechEnd=performance.now()/1000+Math.max(1.4,Math.min(7,words.trim().split(" ").length*.39));
  }
- place(x,z,yaw=0){this.root.position.set(x,0,z);this.root.rotation.y=yaw;return this;}
+ place(x,z,yaw=0){
+  this.walkPath=null;
+  this.root.position.set(x,0,z);
+  this.baseYaw=yaw;
+  this.root.rotation.y=yaw;
+  this.walkAction?.stop();
+  this.idleAction?.reset().play();
+  return this;
+ }
+ walkTo(x,z,duration=3){
+  this.walkPath={
+   fromX:this.root.position.x, fromZ:this.root.position.z,
+   x,z,seconds:Math.max(.5,duration),progress:0
+  };
+  if(this.walkAction){
+   this.idleAction?.fadeOut(.23);
+   this.walkAction.reset().fadeIn(.23).play();
+  }
+ }
+ celebrate(){
+  const dance=this.actions["dance (groove)"]||this.actions.cheer;
+  if(dance){
+   this.idleAction?.fadeOut(.2);
+   dance.reset().fadeIn(.2).play();
+  }
+ }
  gesture(name){
   this.idleLook=performance.now()/1000+1.5;
   if(this.mixer){
@@ -285,8 +314,22 @@ class Performer{
  }
  update(dt,t){
   this.mixer?.update(dt);
+  if(this.walkPath){
+   const p=this.walkPath;
+   p.progress=Math.min(1,p.progress+dt/p.seconds);
+   const eased=p.progress*p.progress*(3-2*p.progress);
+   this.root.position.x=THREE.MathUtils.lerp(p.fromX,p.x,eased);
+   this.root.position.z=THREE.MathUtils.lerp(p.fromZ,p.z,eased);
+   this.baseYaw=Math.sin(Math.PI*p.progress)*Math.sign(p.x-p.fromX)*.13;
+   if(p.progress===1){
+    this.walkPath=null;
+    this.walkAction?.fadeOut(.28);
+    this.idleAction?.reset().fadeIn(.28).play();
+    this.baseYaw=0;
+   }
+  }
   this.root.position.y=Math.sin(t*2.2+(this.name==="EMMA"?2:0))*.012;
-  this.root.rotation.y=Math.sin(t*.46+(this.name==="EMMA"?1.2:0))*.044;
+  this.root.rotation.y=this.baseYaw+Math.sin(t*.46+(this.name==="EMMA"?1.2:0))*.044;
   const blink=Math.pow(Math.max(0,Math.sin(t*1.7+this.blinkPhase)),24);
   this.setFace("eyeBlinkLeft",blink);
   this.setFace("eyeBlinkRight",blink);
@@ -330,7 +373,10 @@ async function prepareCast(){
 }
 function replaceSkyOutfit(){
  if(!starModel)return;
- sky.root.visible=false;
+ const outgoing=sky;
+ starModel.root.position.copy(outgoing.root.position);
+ starModel.root.rotation.copy(outgoing.root.rotation);
+ outgoing.root.visible=false;
  starModel.root.visible=true;
  sky=starModel;
  sky.gesture("happy");
@@ -372,6 +418,8 @@ function startStory(){
  state="intro";chapter("EPISODE 01 · THE DRESSING ROOM");
  cameraShot("intro");
  narrate("Emma, the party starts soon. Will you help me get ready?","SKY");
+ sky.walkTo(sky.root.position.x+.08,.19,4.1);
+ emma.walkTo(emma.root.position.x-.08,.07,4.7);
  emma.gesture("wave");
  delay(3300,()=>{narrate("Yes! Let's find something that feels like YOU!","EMMA");emma.gesture("talk");});
  delay(6700,()=>startOutfitBeat());
@@ -387,6 +435,8 @@ function startOutfitBeat(){
 }
 function startRoomBeat(){
  state="room";chapter("PLOT TWIST · PARTY THEME");
+ sky.walkTo(-.78,-.23,1.7);
+ emma.walkTo(.84,-.26,1.9);
  cameraShot("room");
  narrate("Oh no! The club changed its theme. We need a galaxy room!","SKY");
  createChoices("room");
@@ -394,6 +444,8 @@ function startRoomBeat(){
 }
 function startFeelingsBeat(){
  state="feelings";chapter("THE FRIENDS · LISTENING");
+ sky.walkTo(-.55,-.20,1.8);
+ emma.walkTo(.55,-.20,1.9);
  cameraShot("feelings");
  narrate("I borrowed Emma's ribbon without asking... she looks upset.","SKY");
  delay(2600,()=>{
@@ -407,8 +459,8 @@ function finale(){
  state="ending";chapter("FRIENDS FIRST · HAPPY ENDING");
  cameraShot("finale");
  narrate("I'm sorry, Emma. Next time I will ask first.","SKY");
- sky.gesture("happy");
- emma.gesture("happy");
+ sky.celebrate();
+ emma.celebrate();
  delay(3400,()=>{narrate("Thank you for listening. Now let's dance!","EMMA");});
  delay(7200,()=>{$("end").hidden=false;showNote("");});
 }
