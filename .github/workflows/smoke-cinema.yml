@@ -28,6 +28,8 @@ jobs:
         run: node --test tests/cinema-story.test.mjs
       - name: Install free browser smoke dependency
         run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq ffmpeg
           command -v ffmpeg
           command -v google-chrome
           npm install --no-save --no-package-lock --ignore-scripts --no-audit --no-fund playwright-core
