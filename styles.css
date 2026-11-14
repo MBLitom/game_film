@@ -43,3 +43,93 @@ body.is-choice .scene-indicator{opacity:.85}
 @media(max-height:680px){.choice-panel{padding-top:8px}.choice-options{margin:7px auto}.look{min-height:61px}.look-symbol{font-size:22px}.choice-panel .touch-hint{display:none}.choice-panel h2{font-size:20px}.subtitles{bottom:calc(57px + env(safe-area-inset-bottom))}body.is-choice .subtitles{bottom:calc(255px + env(safe-area-inset-bottom))}}
 @media(orientation:landscape) and (max-height:580px){.opening,.ending{padding:40px 24px}.opening h1,.ending h2{font-size:clamp(37px,8vh,65px);margin:10px 0}.opening p,.ending p{font-size:13px;margin-bottom:9px}.big-button{min-height:42px}.opening .opening-note{display:none}.choice-panel{padding:6px 10px calc(6px + env(safe-area-inset-bottom));max-height:59dvh}.choice-panel h2{font-size:17px}.choice-options{margin:6px auto;max-width:440px}.look{min-height:43px;flex-direction:row;font-size:10px}.look-symbol{font-size:20px}.continue-button{min-height:36px}.choice-panel .touch-hint{display:none}body.is-choice .subtitles{bottom:calc(170px + env(safe-area-inset-bottom))}}
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;scroll-behavior:auto!important}}
+
+
+/* v0.3: temporary film-set compositing. Digital scenery overlays stock footage
+   until an original film set / video-to-3D production pipeline exists. */
+#film-app[data-preview-room="neutral"] .room-set,
+#film-app[data-room="neutral"][data-preview-room="neutral"] .room-set { opacity:0; }
+.room-set{
+ position:absolute;z-index:4;inset:0;pointer-events:none;opacity:1;
+ transition:opacity .35s;
+ --set-light:rgba(180,109,252,.7);
+ --set-glimmer:rgba(122,230,255,.85);
+ --set-label:"GALAXY GLOW";
+ filter:drop-shadow(0 0 14px var(--set-light));
+}
+#film-app[data-preview-room="garden"] .room-set{
+ --set-light:rgba(248,129,175,.67);
+ --set-glimmer:rgba(116,250,159,.8);
+ --set-label:"FLOWER GARDEN";
+}
+#film-app[data-preview-room="beach"] .room-set{
+ --set-light:rgba(255,205,105,.65);
+ --set-glimmer:rgba(87,229,247,.78);
+ --set-label:"BEACH PARTY";
+}
+#film-app[data-preview-room="cosmic"] .room-set,
+#film-app[data-room="cosmic"] .room-set{
+ --set-light:rgba(188,123,255,.78);
+ --set-glimmer:rgba(97,222,255,.88);
+ --set-label:"GALAXY GLOW";
+}
+.room-set::before{
+ content:var(--set-label);
+ position:absolute;top:calc(17% + env(safe-area-inset-top));left:50%;
+ transform:translateX(-50%) perspective(500px) rotateX(16deg);
+ color:white;background:linear-gradient(110deg,#17102a80,#27144a88);
+ padding:8px 18px;border:1px solid var(--set-glimmer);border-radius:8px;
+ font-size:clamp(12px,2.5vw,23px);font-weight:1000;letter-spacing:.12em;
+ text-align:center;white-space:nowrap;box-shadow:0 0 17px var(--set-light),inset 0 0 18px var(--set-light);
+ text-shadow:0 0 12px var(--set-glimmer),0 2px 5px #000;
+}
+.set-light{
+ position:absolute;top:14%;bottom:12%;width:clamp(9px,2.7vw,30px);
+ border:2px solid var(--set-glimmer);
+ border-radius:200px;
+ box-shadow:0 0 24px var(--set-light),0 0 44px var(--set-glimmer),inset 0 0 12px var(--set-light);
+ background:linear-gradient(180deg,var(--set-light),transparent 52%,var(--set-glimmer));
+ opacity:.65
+}
+.set-light--left{left:4.5%;transform:perspective(900px) rotateY(16deg)}
+.set-light--right{right:4.5%;transform:perspective(900px) rotateY(-16deg)}
+.set-stars{
+ position:absolute;inset:0 7% 32%;
+ background-image:radial-gradient(circle at 10% 10%,var(--set-glimmer) 1px,transparent 3px),radial-gradient(circle at 40% 20%,var(--set-glimmer) 2px,transparent 4px),radial-gradient(circle at 74% 12%,var(--set-light) 3px,transparent 5px),radial-gradient(circle at 83% 37%,var(--set-glimmer) 2px,transparent 4px);
+ background-size:130px 160px;opacity:.65;
+ animation:room-shimmer 7s ease-in-out infinite alternate;
+}
+.set-floor{
+ position:absolute;left:-10%;right:-10%;bottom:-25%;height:39%;
+ background:repeating-linear-gradient(90deg,transparent 0 20px,var(--set-glimmer) 21px 22px,transparent 23px 95px),linear-gradient(to bottom,var(--set-light),transparent 65%);
+ transform:perspective(150px) rotateX(62deg);transform-origin:50% 0;
+ opacity:.36;
+}
+#film-app[data-preview-room="garden"] .set-stars{background-image:radial-gradient(circle at 10% 10%,#ffc6e5 2px,transparent 6px),radial-gradient(circle at 74% 12%,#a9ffb5 3px,transparent 7px)}
+#film-app[data-preview-room="beach"] .set-stars{background-image:radial-gradient(circle at 40% 20%,#ffec9a 4px,transparent 7px),radial-gradient(circle at 83% 37%,#a8f7ff 3px,transparent 6px)}
+@keyframes room-shimmer {from{opacity:.25;transform:translateY(1%)}to{opacity:.75;transform:translateY(-1%)}}
+.choice-response{
+ min-height:32px;display:flex;align-items:center;justify-content:center;
+ color:#f9d9f0!important;font-weight:780;font-size:clamp(11px,2.5vw,14px)!important;
+ line-height:1.24;margin:0 auto 4px!important;max-width:570px;
+ text-shadow:0 2px 7px #000;
+}
+.choice-panel{max-height:min(59dvh,460px)}
+.choice-options{margin:10px auto 7px}
+.continue-button.accepted{opacity:1;box-shadow:0 0 24px rgba(253,188,243,.36)}
+/* Do not let a preview menu overtake the frame. */
+@media(max-height:680px){
+ .choice-panel{max-height:63dvh}
+ .choice-response{min-height:23px}
+ .choice-panel .touch-hint{display:none}
+ .look{min-height:55px}
+}
+@media(orientation:landscape) and (max-height:580px){
+ .choice-panel{max-height:75dvh}
+ .choice-response{min-height:18px;margin:2px auto!important;font-size:11px!important}
+ .choice-options{margin:4px auto 3px}
+ .choice-panel h2{font-size:16px}
+ .choice-panel p{font-size:11px}
+ .room-set::before{top:13%;font-size:11px}
+}
+@media(prefers-reduced-motion:reduce){.set-stars{animation:none}}
