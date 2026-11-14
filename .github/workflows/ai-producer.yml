@@ -1,0 +1,72 @@
+name: GAME FILM — AI producer (manual)
+
+on:
+  workflow_dispatch:
+    inputs:
+      task:
+        description: "Read-only key verification or one free-tier screenplay draft"
+        required: true
+        default: verify_keys
+        type: choice
+        options:
+          - verify_keys
+          - draft_scene
+      free_tier_confirmed:
+        description: "I verified my Google API key belongs to a FREE-tier project (no billing)"
+        required: true
+        default: false
+        type: boolean
+
+permissions:
+  contents: read
+
+concurrency:
+  group: game-film-ai-manual
+  cancel-in-progress: false
+
+jobs:
+  author:
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    env:
+      GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+      TRIPO_API_KEY: ${{ secrets.TRIPO_API_KEY }}
+    steps:
+      - name: Get trusted repository code
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Test safety guards offline (no API requests)
+        run: node --test tests/check-ai.test.mjs tests/scene-ai.test.mjs tests/mesh-ai.test.mjs tests/story-engine.test.mjs
+
+      - name: Verify both API keys without generation
+        if: inputs.task == 'verify_keys'
+        run: node tools/check-ai.mjs
+
+      - name: Check Google FREE-tier confirmation
+        if: inputs.task == 'draft_scene'
+        env:
+          FREE_TIER_CONFIRMED: ${{ inputs.free_tier_confirmed }}
+        run: |
+          if [[ "$FREE_TIER_CONFIRMED" != "true" ]]; then
+            echo "Stopped: explicit Google Free-tier confirmation required."
+            exit 1
+          fi
+          if [[ -z "$GEMINI_API_KEY" ]]; then
+            echo "Stopped: add GEMINI_API_KEY to GitHub repository Actions Secrets."
+            exit 1
+          fi
+
+      - name: Generate one original English 3D movie scene specification
+        if: inputs.task == 'draft_scene'
+        run: node tools/scene-ai.mjs --execute --verified-free
+
+      - name: Save scene specification as a short-lived artifact (never commit it automatically)
+        if: inputs.task == 'draft_scene'
+        uses: actions/upload-artifact@v4
+        with:
+          name: game-film-scene-01
+          path: generated/scene_01.json
+          retention-days: 1
+          if-no-files-found: error
