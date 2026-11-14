@@ -5,3 +5,6 @@ dist/
 coverage/
 .env
 .env.*
+
+# Private API-generated assets and local export results
+generated/
