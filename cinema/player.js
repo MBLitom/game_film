@@ -201,7 +201,7 @@ function playCurrent(){
  if(!video.src.endsWith("/"+clip))video.src=url;
  video.currentTime=0;
  const p=video.play();
- if(p?.catch)p.catch(err=>showError("The video could not start ("+err.name+")."));
+ if(p?.catch)p.catch(err=>{if(err.name!=="AbortError")showError("The video could not start ("+err.name+").");});
 }
 video.addEventListener("ended",()=>{
  try{
