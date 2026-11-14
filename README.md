@@ -20,6 +20,20 @@ The idea is a **film, not a dress-up game**. Children watch an original story pe
 
 This is **NOT yet a photorealistic film**. The production still needs more cinematic acting, professional lighting, tailored costumes, facial performance capture / lip synchronization, longer original episodes and age-appropriate user observation. Current outfits and rooms are early art assets, not the final standard. We do not falsely claim NVIDIA Audio2Face or paid AI generated this film.
 
+## Google Flow cinema pipeline (new — production footage pending)
+
+We now maintain a separate **film-first** cinematic player at [the cinema staging route](https://mblitom.github.io/game_film/cinema/). It is designed to show original photorealistic shots generated OFFLINE in **Google Flow** with 3D editing inside the paused movie frame, then resume the next matching authored clip. This is **not the same as the earlier 3D game demo**.
+
+**Important:** Flow footage has **not** been generated, reviewed or added yet. The cinema route explicitly reports missing real clips instead of showing fake clips or stock images. The public home still displays the separate original-3D *interaction* technical preview until real film assets are ready.
+
+- See [original cast bible and four Google Flow video prompts](docs/FLOW_EP01_PRODUCTION.md), with 9:16 phone-first framing and 0 EUR new costs.
+- Four files are required in `public/flow/ep01/`: `intro.mp4`, `outfit_ok.mp4`, `room_ok.mp4`, `empathy_ok.mp4`.
+- The story player is `cinema/player.js`; the auditable film timeline is `cinema/story-playback.mjs`.
+- The child can touch/drag real Three.js wardrobe and decor objects in front of a paused cinematic frame; choices remain authored, **not paid per-viewer video AI requests**.
+- Cinema readiness and user interaction smoke tests use synthetic color clips on GitHub Actions only. Those test clips are **never committed, never shown as actual episode content and never substitutes for Flow video**.
+- Verify actual media with `node tools/validate-flow-clips.mjs public/flow/ep01` (requires ffprobe) and adult visual review before making the cinema player the public default.
+- Keep Google's invisible SynthID provenance marker intact and follow Flow's current download and distribution terms.
+
 ## Development
 
 ```sh
