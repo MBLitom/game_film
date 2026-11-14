@@ -35,7 +35,7 @@ test("mock task only after balance check",async()=>{
  const requests=[];
  const fetchImpl=async(url,options)=>{
   requests.push([url,options.method]);
-  return {ok:true,json:async()=> url.endsWith("/account/balance")?{code:0,data:{balance:50,frozen:0}}:{code:0,data:{task_id:"test-id"}})};
+  return {ok:true,json:async()=> url.endsWith("/account/balance") ? {code:0,data:{balance:50,frozen:0}} : {code:0,data:{task_id:"test-id"}}};
  };
  const result=await requestMesh({key:"fake",confirmedFreeTrial:true,fetchImpl});
  assert.equal(result.task_id,"test-id");
