@@ -7,9 +7,10 @@ const choiceTitle = $("choice-title"), choiceDesc = $("choice-description");
 const continueBtn = $("continue"), soundBtn = $("sound-btn"), sceneLabel = $("scene-indicator");
 const choiceButtons = [...document.querySelectorAll(".look")];
 
+const videoFormat = video.canPlayType('video/mp4; codecs="avc1.42E01E"') ? "mp4" : "webm";
 const clips = {
-  dressing: "./media/hair.webm",
-  party: "./media/party.webm"
+  dressing: `./media/hair.${videoFormat}`,
+  party: `./media/party.${videoFormat}`
 };
 let phase = "title"; // title | dressing | first-choice | dressing-resume | twist | party | end
 let activeLook = null;
@@ -215,7 +216,7 @@ for(let i=0;i<38;i++){
 }
 function clearAccessory() {
   while(accessory.children.length) {
-    const child=accessory.children.pop(); if(!child) break;
+    const child=accessory.children[0]; if(!child) break;
     accessory.remove(child);
     if(child.geometry) child.geometry.dispose();
     if(child.material) child.material.dispose();

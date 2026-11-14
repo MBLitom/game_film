@@ -24,7 +24,7 @@ https://mblitom.github.io/game_film/
 - `styles.css`: locked 100dvh viewport, safe-area handling, portrait/landscape layouts
 - `main.js`: film timeline, choices, narrator, touch reaction and lightweight Three.js effects
 - `vendor/`: local Three.js modules, released under their own MIT license
-- `media/`: temporary demonstration footage under CC BY-SA 4.0, **not under this repository's MIT code license**
+- `media/`: temporary demonstration footage (WebM sources and MP4 mobile-compatible derivatives) under CC BY-SA 4.0, **not under this repository's MIT code license**
 
 ## Development
 
