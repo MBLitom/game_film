@@ -1,29 +1,35 @@
-# GAME FILM: zero-cost infrastructure policy
+# GAME FILM — infrastructure and zero-new-cost policy
 
-Status: mandatory project constraint set by MB Litom. No spending, subscription, or resource plan change may be initiated without explicit owner approval.
+**Project owner: MB Litom.** No purchases, subscriptions, new services or resource increases without the owner's explicit approval.
 
-## Production & runtime
-- GitHub Pages provides the static public demo. Never provision a cloud game server for this project as a default.
-- Rendering of the 3D environment, materials, characters, cinematics and player actions happens in the visitor's WebGL-capable browser. Browser-side rendering does **not** consume Oracle GPU time.
-- Generated film clips and other assets are stored as static optimized files. No per-viewer remote AI inference.
-- Original film scenes and characters are built offline from original or rights-cleared open-source assets.
-- Optional AI software is used only under its actual model and SDK licenses; open-source game code does not mean third-party weights are automatically free to distribute.
+## Deployment ownership — Hetzner, not Oracle
 
-## Oracle Always Free — strict no-expansion rule
-- No creation, resizing or shape migration of OCI instances for GAME FILM.
-- No new paid GPU, block volume, object storage, load balancer, database, networking resource, egress service or marketplace listing.
-- No local model training, large model inference, mass dataset downloads, bulk asset builds or video rendering on the existing Oracle host.
-- No changes to account tier, Always Free plan, cost settings or OCI billing.
-- No automated job or CI pipeline may issue OCI mutation commands.
-- When in doubt, **stop and request owner approval** rather than risk consuming a metered resource.
+- **All new MB Litom projects belong on the existing Hetzner infrastructure if server-side hosting, storage, workers or compute are actually required.**
+- GAME FILM source is maintained in GitHub (`MBLitom/game_film`).
+- For the **current static demo only**, GitHub Pages serves the public prototype at https://mblitom.github.io/game_film/. This is not a new backend server and does not change the Hetzner-first rule.
+- When a backend, site server or server-side media processing is justified, deploy within the **existing Hetzner environment**, after checking available CPU, RAM, disk, network and coexistence with other services. Never create a second rented server or upgrade a plan without explicit approval.
+- Prefer generating 3D assets off the live serving path; published output should be static, compressed GLB/GLTF, MP4/WebM and client-side WebGL.
+- Production browser clients render the actors, room and camera locally wherever feasible. No per-viewer paid AI API or GPU server dependency.
 
-## Build & test
-- Prefer code-only changes in GitHub; optional static builds in free CI within the published included quota, without paid upgrades.
-- Heavy generation happens only on a separately approved local/offline computer. Check available CPU, memory, free disk and graphics hardware before execution.
-- Never silently launch resource-intensive tasks on existing Litom production hosts.
-- Prefer compact GLB/GLTF, static animations and compressed MP4/WebM with lazy loading and no always-on backend.
-- Local tests, GitHub Pages and browser rendering should not depend on Oracle being available.
+## Oracle — existing infrastructure only, out of scope for this project
 
-## Verification
-- A shell on the Oracle server can verify processes, memory and disk usage but **cannot confirm OCI billing, free-tier eligibility or account-wide capacity**. Verify these via the OCI tenancy console before any architectural change.
-- The project cannot claim Oracle usage is under every account limit without OCI tenancy metrics.
+- Do not use Oracle for GAME FILM build jobs, models, training, video rendering, website backend or new resources.
+- Never create, upgrade or resize OCI instances, disks, networks, services or billing.
+- Do not use Oracle as a fallback if Hetzner is busy.
+- No changes to Always Free plan or account-level spending settings.
+- OCI free-tier limits cannot be verified from an ordinary server shell alone.
+
+## Software / AI license safeguards
+
+- Core project intended to remain open-source; source-code and generated media rights must be checked separately.
+- Free AI tooling can be part of an **offline** content pipeline, with the relevant model weights' licensing verified for redistribution and required uses.
+- The project targets zero EUR in **new** expenditure; existing paid Hetzner service remains a pre-existing company cost, not a new GAME FILM subscription.
+- Do not initiate resource-intensive jobs on any production host without first checking available capacity and impact.
+- If new cost or resource commitment becomes necessary, stop for approval.
+
+## User experience requirements
+
+- Film first, with 3D camera, actors, scene geometry, and minimal momentary interaction.
+- No scrolling; full-viewport presentation on mobile.
+- Original film scenes must preserve the selected costume and set across cuts.
+- The child receives age-appropriate, kind feedback and is not shamed for emotions.
