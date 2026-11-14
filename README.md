@@ -30,6 +30,17 @@ https://mblitom.github.io/game_film/
 
 **New-project server placement: existing Hetzner**, not Oracle. The current static demo is temporarily delivered through GitHub Pages and does not require a server. If backend hosting or compute becomes necessary, use the existing Hetzner environment only after capacity checks, with **0 EUR in new costs or plan changes** without approval. Oracle is excluded from GAME FILM workloads. See [infrastructure policy](docs/ZERO_COST_INFRASTRUCTURE.md).
 
+## AI production tooling (not connected to the public demo yet)
+
+We have added two **offline-by-default API adapters** for building the **original virtual film**:
+
+- [Google Gemini scene authoring](tools/scene-ai.mjs): produces structured cinematic shot instructions, original character briefs, room descriptions and continuity constraints.
+- [Tripo 3D asset generation](tools/mesh-ai.mjs): prepares a textured real 3D model task and checks available trial credits before optional submission.
+
+No browser API keys, no recurring tasks or paid fallback. **These are authoring tools, not a claim that the real 3D actors or film have been generated.** API keys are not yet connected.
+
+Read [AI provider pipeline](docs/AI_PROVIDER_PIPELINE.md) for tested commands, free trial conditions and licensing cautions.
+
 ## Development
 
 Serve the directory through any static HTTP server, e.g. `python3 -m http.server 8000`, and open `http://localhost:8000` (file:// cannot load JavaScript modules reliably). No build tools or keys required.
