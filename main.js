@@ -1,191 +1,234 @@
 import * as THREE from "./vendor/three.module.js";
+import {EPISODE, BEATS, initialStoryState, evolveStory} from "./story-engine.mjs";
 
 const $ = (id) => document.getElementById(id);
-const video = $("film"), opening = $("opening"), ending = $("ending");
-const choiceOverlay = $("choice-overlay"), subtitle = $("subtitles");
-const choiceTitle = $("choice-title"), choiceDesc = $("choice-description");
-const continueBtn = $("continue"), soundBtn = $("sound-btn"), sceneLabel = $("scene-indicator");
-const choiceButtons = [...document.querySelectorAll(".look")];
-
-const videoFormat = video.canPlayType('video/mp4; codecs="avc1.42E01E"') ? "mp4" : "webm";
-const clips = {
-  dressing: `./media/hair.${videoFormat}`,
-  party: `./media/party.${videoFormat}`
-};
-let phase = "title"; // title | dressing | first-choice | dressing-resume | twist | party | end
-let activeLook = null;
-let narrationEnabled = false;
-let currentSubtitle = "";
-let reactionLock = false;
-let errorShown = false;
+const app=$("film-app"),video=$("film"),opening=$("opening"),ending=$("ending");
+const choiceOverlay=$("choice-overlay"), subtitle=$("subtitles");
+const choiceTitle=$("choice-title"),choiceDesc=$("choice-description");
+const choiceResponse=$("choice-response"),choiceOptions=$("choice-options");
+const continueBtn=$("continue"),soundBtn=$("sound-btn"),sceneLabel=$("scene-indicator");
+const videoFormat=video.canPlayType('video/mp4; codecs="avc1.42E01E"')?"mp4":"webm";
+const clips={dressing:"./media/hair."+videoFormat,party:"./media/party."+videoFormat};
+let phase="title", activeBeat=null, activeOutcome=null, story=initialStoryState();
+let narrationEnabled=false,currentSubtitle="",errorShown=false,reactionLock=false;
+let speechTimer=null;
 
 function setSubtitle(text) {
-  if (text === currentSubtitle) return;
-  currentSubtitle = text;
-  subtitle.textContent = text || "";
+  if(text===currentSubtitle)return;
+  currentSubtitle=text;
+  subtitle.textContent=text||"";
 }
 function speak(text) {
-  if (!narrationEnabled || !("speechSynthesis" in window)) return;
-  try {
+  if(!narrationEnabled||!("speechSynthesis" in window))return;
+  try{
     window.speechSynthesis.cancel();
-    const voiceLine = new SpeechSynthesisUtterance(text);
-    voiceLine.lang = "en-US"; voiceLine.rate = .96; voiceLine.pitch = 1.12;
-    window.speechSynthesis.speak(voiceLine);
-  } catch { /* captions still work */ }
+    const saying=new SpeechSynthesisUtterance(text);
+    saying.lang="en-US";saying.rate=.9;saying.pitch=1.07;
+    window.speechSynthesis.speak(saying);
+  }catch{ /* captions remain available */ }
 }
-function line(text, talk = false) {
+function line(text,voice=false){
   setSubtitle(text);
-  if (talk) speak(text);
+  if(voice)speak(text);
 }
-function setPhase(next) {
-  phase = next;
-  document.body.classList.toggle("is-choice",next === "first-choice" || next === "twist");
+function setPhase(next){
+  phase=next;
+  document.body.classList.toggle("is-choice",next.startsWith("choice:"));
 }
-function failMedia() {
-  if (errorShown) return;
-  errorShown = true;
-  const box = $("error");
-  box.hidden = false;
-  box.textContent = "The preview video could not load. Check the connection and tap to reload.";
-  box.tabIndex = 0;
-  box.onclick = () => location.reload();
+function failMedia(){
+  if(errorShown)return;
+  errorShown=true;
+  const box=$("error");
+  box.hidden=false;
+  box.textContent="The film preview couldn't load. Tap here to reload.";
+  box.onclick=()=>location.reload();
 }
-function loadClip(source) {
+function loadClip(name){
   video.pause();
-  video.src = clips[source];
+  video.src=clips[name];
   video.load();
 }
-function playClip() {
-  video.muted = true; // all English dialogue belongs to the prototype, not sample footage
-  const playing = video.play();
-  if (playing && playing.catch) playing.catch(failMedia);
+function playClip(){
+  video.muted=true; // only voiced authored fiction, not sounds from stock samples
+  const result=video.play();
+  if(result?.catch) result.catch(failMedia);
 }
-function resetLookChoices() {
-  activeLook = null;
-  choiceButtons.forEach(button => {
-    button.classList.remove("selected");
-    button.setAttribute("aria-pressed", "false");
-  });
-  continueBtn.disabled = true;
-  accessory.visible = false;
+function resetChoices(){
+  activeOutcome=null;
+  choiceOptions.replaceChildren();
+  choiceResponse.textContent="";
+  continueBtn.disabled=true;
+  accessory.visible=false;
 }
-function openChoice(kind) {
+function openBeat(beatId){
+  const beat=BEATS[beatId];
+  if(!beat)throw new Error("Missing authored beat "+beatId);
   video.pause();
-  setPhase(kind === "first" ? "first-choice" : "twist");
-  choiceOverlay.hidden = false;
-  resetLookChoices();
-  if (kind === "first") {
-    sceneLabel.textContent = "SCENE 01 · HAIR STUDIO";
-    $("choice-badge").textContent = "YOUR TURN · HELP THE STORY";
-    choiceTitle.textContent = "Help with the party look!";
-    choiceDesc.textContent = "Pick an accessory. The story will continue when you're ready.";
-    line("Oh! Is that for me? Which one should we try?", true);
-  } else {
-    sceneLabel.textContent = "PLOT TWIST · NEW PARTY THEME";
-    $("choice-badge").textContent = "PLOT TWIST · HELP AGAIN";
-    choiceTitle.textContent = "Wait! The theme changed!";
-    choiceDesc.textContent = "Tonight it's Galaxy Glow! Help prepare a new look.";
-    line("What? The theme changed AGAIN? Let's pick something magical!", true);
+  activeBeat=beatId;
+  setPhase("choice:"+beatId);
+  choiceOverlay.hidden=false;
+  resetChoices();
+  $("choice-badge").textContent=beat.badge;
+  choiceTitle.textContent=beat.prompt;
+  choiceDesc.textContent=beat.instruction;
+  continueBtn.textContent=beat.continueText;
+  sceneLabel.textContent=beatId==="outfit"?"SCENE 01 · THE STYLIST":beatId==="room"?"SCENE 02 · THE SET DESIGNER":"SCENE 03 · FRIENDS FIRST";
+  $("touch-hint").textContent=beatId==="outfit"?"Sky has her own style. Listen to her suggestions.":beatId==="room"?"Watch the colors and decorations change in the film frame.":"It's okay to feel upset. We can choose how to respond.";
+  if(beatId==="room")app.dataset.previewRoom="neutral";
+  for(const option of beat.choices){
+    const b=document.createElement("button");
+    b.type="button";b.className="look";
+    b.dataset.choice=option.id;
+    b.setAttribute("aria-pressed","false");
+    const emoji=document.createElement("span");emoji.className="look-symbol";emoji.textContent=option.emoji;
+    const label=document.createElement("span");label.textContent=option.label;
+    b.append(emoji,label);
+    b.addEventListener("click",()=>choose(beatId,option.id));
+    choiceOptions.append(b);
+  }
+  const intros={
+    outfit:"I love stars! Help me choose something that feels like me!",
+    room:"Oh no, the party theme changed! Can you turn this place into a galaxy?",
+    feelings:"Emma looks sad. I used her ribbon without asking. What should I do?"
+  };
+  line(intros[beatId],true);
+}
+function choose(beatId,key){
+  if(phase!=="choice:"+beatId)return;
+  const value=evolveStory(story,beatId,key);
+  story=value.state;activeOutcome=value.outcome;
+  for(const b of choiceOptions.querySelectorAll("button")){
+    const selected=b.dataset.choice===key;
+    b.classList.toggle("selected",selected);
+    b.setAttribute("aria-pressed",String(selected));
+  }
+  const hint=value.outcome.hint;
+  choiceResponse.textContent=value.outcome.feedback+(hint?" "+hint:"");
+  continueBtn.disabled=!value.outcome.accepted;
+  continueBtn.classList.toggle("accepted",value.outcome.accepted);
+  if(beatId==="outfit"){
+    setAccessory(key);
+    accessory.visible=true;
+    app.dataset.previewOutfit=key;
+  }
+  if(beatId==="room") applyRoomPreview(key);
+  if(beatId==="feelings"){
+    accessory.visible=false;
+    if(value.outcome.accepted) app.dataset.friendship="resolved";
+  }
+  line(value.outcome.feedback+(hint?" "+hint:""),true);
+}
+function applyRoomPreview(key){
+  app.dataset.previewRoom=key;
+  if(key==="cosmic"){
+    glow.color.setHex(0xab79ff); cool.color.setHex(0x5febff);
+  }else if(key==="garden"){
+    glow.color.setHex(0xff9ed7); cool.color.setHex(0x8aff99);
+  }else if(key==="beach"){
+    glow.color.setHex(0xffdd8d); cool.color.setHex(0x69eaff);
   }
 }
-function selectLook(key) {
-  activeLook = key;
-  choiceButtons.forEach(button => {
-    const selected = button.dataset.look === key;
-    button.classList.toggle("selected",selected);
-    button.setAttribute("aria-pressed",String(selected));
-  });
-  continueBtn.disabled = false;
-  setAccessory(key);
-  const names = {
-    rose: "Pink ribbons? Oh, that's cute!",
-    star: "Wow! I'm a shining star!",
-    royal: "A crown? That's a bit much! Can we try another?"
-  };
-  line(names[key], true);
-}
-choiceButtons.forEach(button => button.addEventListener("click", () => selectLook(button.dataset.look)));
-$("start").addEventListener("click", () => startStory());
-$("again").addEventListener("click", () => startStory());
-$("continue").addEventListener("click", () => {
-  if (!activeLook) return;
-  choiceOverlay.hidden = true;
-  accessory.visible = false;
-  if (phase === "first-choice") {
+function continueStory(){
+  if(!activeOutcome?.accepted||!activeBeat)return;
+  const beatId=activeBeat;
+  choiceOverlay.hidden=true;
+  accessory.visible=false;
+  activeBeat=null;
+  app.dataset.previewOutfit="";
+  if(beatId==="outfit"){
     setPhase("dressing-resume");
-    sceneLabel.textContent = "SCENE 01 · THE MAKEOVER";
-    line("Okay, let's finish getting ready!",true);
+    sceneLabel.textContent="SCENE 01 · GETTING READY";
+    line("That feels just right. Thank you for listening to what I like!",true);
     playClip();
-  } else if (phase === "twist") {
+  }else if(beatId==="room"){
+    app.dataset.room=story.room;
+    app.dataset.previewRoom=story.room;
     setPhase("party");
-    sceneLabel.textContent = "SCENE 02 · THE PARTY";
-    $("episode-label").textContent = "EPISODE 01 · FINALE";
-    line("Come on! The party is waiting for us!",true);
+    sceneLabel.textContent="SCENE 02 · THE NEW GALAXY ROOM";
+    $("episode-label").textContent="EPISODE 01 · THE PARTY";
+    line("Now the room is ready! Let's join the party!",true);
     loadClip("party");
     playClip();
+  }else if(beatId==="feelings"){
+    setPhase("party-resume");
+    sceneLabel.textContent="SCENE 03 · WE LISTENED";
+    line("I'm sorry I borrowed your ribbon without asking. Can we choose together next time?",true);
+    playClip();
   }
-});
-function startStory() {
-  errorShown = false; $("error").hidden = true;
-  opening.hidden = true; ending.hidden = true; choiceOverlay.hidden = true;
-  $("episode-label").textContent = "EPISODE 01";
-  resetLookChoices();
+}
+continueBtn.addEventListener("click",continueStory);
+function startStory(){
+  story=initialStoryState();
+  activeBeat=null;activeOutcome=null;
+  errorShown=false;$("error").hidden=true;
+  opening.hidden=true;ending.hidden=true;choiceOverlay.hidden=true;
+  app.dataset.room="neutral";app.dataset.previewRoom="neutral";app.dataset.previewOutfit="";
+  app.dataset.friendship="unresolved";
+  $("episode-label").textContent="EPISODE 01";
   setPhase("dressing");
+  resetChoices();
+  sceneLabel.textContent="SCENE 01 · BEFORE THE PARTY";
+  narrationEnabled=true;
+  soundBtn.textContent="🔊";
+  soundBtn.setAttribute("aria-pressed","true");
   loadClip("dressing");
-  sceneLabel.textContent = "SCENE 01 · GETTING READY";
-  line("Tonight is the big party! Let's get ready!",true);
+  line("Let's get ready for the party. Sky needs a little help!",true);
   playClip();
 }
-video.addEventListener("timeupdate", () => {
-  if (phase === "dressing") {
-    if (video.currentTime >= 4.5) {
-      openChoice("first");
-    } else if (video.currentTime >= 2) setSubtitle("The friends are getting ready for a special night...");
-  } else if (phase === "dressing-resume") {
-    if (video.currentTime > 6.5) setSubtitle("They think everything is ready. But...");
-  } else if (phase === "party") {
-    if (video.currentTime > 3) setSubtitle("The friends made it! This is only the beginning...");
-    if (video.currentTime > 9) finish();
+$("start").addEventListener("click",startStory);
+$("again").addEventListener("click",startStory);
+function finish(){
+  if(phase==="end")return;
+  video.pause();
+  accessory.visible=false;
+  setPhase("end");
+  ending.hidden=false;
+  sceneLabel.textContent="THE END · FRIENDS FIRST";
+  line("",false);
+  speak("Great job helping the friends listen to each other. To be continued!");
+}
+video.addEventListener("timeupdate",()=>{
+  if(phase==="dressing"&&video.currentTime>=4.2){
+    openBeat("outfit");
+  }else if(phase==="dressing-resume"&&video.currentTime>=6.3){
+    setSubtitle("Everyone's ready... but the club has a surprise!");
+  }else if(phase==="party"&&video.currentTime>=3.4){
+    openBeat("feelings");
+  }else if(phase==="party-resume"&&video.currentTime>=8.7){
+    finish();
   }
 });
-video.addEventListener("ended",() => {
-  if (phase === "dressing" || phase === "dressing-resume") openChoice("twist");
-  else if (phase === "party") finish();
+video.addEventListener("ended",()=>{
+  if(phase==="dressing"||phase==="dressing-resume"){
+    openBeat("room");
+  } else if(phase==="party"||phase==="party-resume"){
+    finish();
+  }
 });
 video.addEventListener("error",failMedia);
-video.addEventListener("pointerdown",event => {
-  if (phase !== "first-choice" && phase !== "twist") return;
-  // This hit-zone is only a temporary placeholder until the performer is tracked in footage.
-  const relativeY = (event.clientY / window.innerHeight);
-  if (relativeY < .68 && !reactionLock) {
-    reactionLock = true;
-    line("Ouch! Easy with my hair, please!",true);
-    jiggleAccessory();
-    setTimeout(() => {reactionLock = false;},650);
-  }
+// Sample footage is not actor-tracked; screen touches offer a narrative response,
+// never a claim that a filmed person actually felt a touch.
+video.addEventListener("pointerdown",event=>{
+  if(phase!=="choice:outfit"||reactionLock)return;
+  if(event.clientY/window.innerHeight>.68)return;
+  reactionLock=true;
+  line("Hey, gentle hands, please. Let's pick the outfit together!",true);
+  jiggleAccessory();
+  setTimeout(()=>{reactionLock=false;},650);
 });
-soundBtn.addEventListener("click",() => {
-  narrationEnabled = !narrationEnabled;
-  soundBtn.textContent = narrationEnabled ? "🔊" : "🔇";
+soundBtn.addEventListener("click",()=>{
+  narrationEnabled=!narrationEnabled;
+  soundBtn.textContent=narrationEnabled?"🔊":"🔇";
   soundBtn.setAttribute("aria-pressed",String(narrationEnabled));
-  if (narrationEnabled) speak(currentSubtitle || "Welcome to Game Film!");
-  else if ("speechSynthesis" in window) window.speechSynthesis.cancel();
+  if(narrationEnabled)speak(currentSubtitle||"Let's help the friends!");
+  else if("speechSynthesis" in window)window.speechSynthesis.cancel();
 });
-document.addEventListener("visibilitychange",() => {
-  if (document.hidden) {
+document.addEventListener("visibilitychange",()=>{
+  if(document.hidden){
     video.pause();
-    if ("speechSynthesis" in window) window.speechSynthesis.cancel();
+    if("speechSynthesis" in window)window.speechSynthesis.cancel();
   }
 });
-function finish() {
-  if (phase === "end") return;
-  video.pause(); accessory.visible = false;
-  setPhase("end");
-  ending.hidden = false;
-  sceneLabel.textContent = "TO BE CONTINUED";
-  subtitle.textContent = "";
-  speak("To be continued!");
-}
 $("credits-btn").addEventListener("click",()=> $("credits").showModal());
 $("credits-close").addEventListener("click",()=> $("credits").close());
 
