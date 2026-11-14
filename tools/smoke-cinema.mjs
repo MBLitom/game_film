@@ -40,7 +40,8 @@ async function main(){
  }
  async function choose(id,acceptedPhase){
   const all=await page.evaluate(()=>window.__GF_CINEMA_TEST__?.choices());
-  if(!all.length){console.error("BROWSER PAGE ERRORS",JSON.stringify(errors));console.error("PHASE",await page.evaluate(()=>window.__GF_CINEMA_TEST__?.phase()));}
+  if(!all.length){console.error("BROWSER PAGE ERRORS",JSON.stringify(errors));console.error("PHASE",await page.evaluate(()=>window.__GF_CINEMA_TEST__?.phase()));
+  console.error("ERROR_BOX",await page.evaluate(()=>({visible:!document.querySelector("#error").hidden,text:document.querySelector("#error-text").textContent})));}
   const selected=all.find(item=>item.id===id);
   assert.ok(selected,"3D choice "+id+" not present: "+JSON.stringify(all));
   assert.ok(selected.x>=0&&selected.x<390&&selected.y>=0&&selected.y<844,"Touch target inside phone viewport: "+JSON.stringify(selected));
