@@ -40,6 +40,9 @@ jobs:
         working-directory: /tmp/ara-cast
         run: |
           npm ci --no-audit --no-fund
+          # MakeHuman's documented primary mirror, reachable by GitHub runners.
+          # The original Ara URL currently times out; do not change upstream licensing.
+          sed -i 's|https://files.makehumancommunity.org/asset_packs/|https://files2.makehumancommunity.org/asset_packs/|' scripts/setup-assets.ts
           npm run setup-assets
       - name: Export original SKY and EMMA rigged GLB models
         working-directory: /tmp/ara-cast
