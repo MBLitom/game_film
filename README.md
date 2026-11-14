@@ -20,19 +20,23 @@ The idea is a **film, not a dress-up game**. Children watch an original story pe
 
 This is **NOT yet a photorealistic film**. The production still needs more cinematic acting, professional lighting, tailored costumes, facial performance capture / lip synchronization, longer original episodes and age-appropriate user observation. Current outfits and rooms are early art assets, not the final standard. We do not falsely claim NVIDIA Audio2Face or paid AI generated this film.
 
-## Google Flow cinema pipeline (new — production footage pending)
+## Real-film pipeline — Kling or Google Flow (footage pending)
 
-We now maintain a separate **film-first** cinematic player at [the cinema staging route](https://mblitom.github.io/game_film/cinema/). It is designed to show original photorealistic shots generated OFFLINE in **Google Flow** with 3D editing inside the paused movie frame, then resume the next matching authored clip. This is **not the same as the earlier 3D game demo**.
+Our current public homepage is still the original **3D interaction prototype**, not a photorealistic movie. The separate [cinema staging route](https://mblitom.github.io/game_film/cinema/) is prepared for **original, licensed real-looking AI footage** created offline with Kling, Flow or another compliant provider, followed by actual in-frame 3D choices.
 
-**Important:** Flow footage has **not** been generated, reviewed or added yet. The cinema route explicitly reports missing real clips instead of showing fake clips or stock images. The public home still displays the separate original-3D *interaction* technical preview until real film assets are ready.
+**No cinematic source clips have yet been generated or published.** Google Flow rejected an earlier fictional-child prompt. The first Kling experiment is ready as an original, age-appropriate 9:16 family scene; **no Kling generation has been run or credited to this project**. See [the ready-to-paste Kling first-shot instructions](docs/KLING_FIRST_REAL_SHOT.md).
 
-- See [original cast bible and four Google Flow video prompts](docs/FLOW_EP01_PRODUCTION.md), with 9:16 phone-first framing and 0 EUR new costs.
-- Four files are required in `public/flow/ep01/`: `intro.mp4`, `outfit_ok.mp4`, `room_ok.mp4`, `empathy_ok.mp4`.
-- The story player is `cinema/player.js`; the auditable film timeline is `cinema/story-playback.mjs`.
-- The child can touch/drag real Three.js wardrobe and decor objects in front of a paused cinematic frame; choices remain authored, **not paid per-viewer video AI requests**.
-- Cinema readiness and user interaction smoke tests use synthetic color clips on GitHub Actions only. Those test clips are **never committed, never shown as actual episode content and never substitutes for Flow video**.
-- Verify actual media with `node tools/validate-flow-clips.mjs public/flow/ep01` (requires ffprobe) and adult visual review before making the cinema player the public default.
-- Keep Google's invisible SynthID provenance marker intact and follow Flow's current download and distribution terms.
+The player now reads `public/film/ep01/` (provider-neutral):
+- `intro.mp4` — this file **alone** allows an honest *first-shot preview*, then the story pauses for the child
+- `outfit_ok.mp4` — same actresses, Sky now wearing the accepted star outfit
+- `room_ok.mp4` — same actresses/outfits in the approved galaxy room
+- `empathy_ok.mp4` — natural apology and ending
+
+Each missing continuation is reported as pending: **no invented video or placeholder footage is passed off as a real movie**. Child-facing real-time paid video generation is not required. Test-pattern footage exists in CI only and is never committed.
+
+Implementation: `cinema/player.js`, `cinema/story-playback.mjs`, `tools/smoke-cinema.mjs`, `tools/validate-flow-clips.mjs` (provider-neutral despite older filename), `.github/workflows/smoke-cinema.yml`.
+
+Zero EUR in new expenses; no Oracle; existing Hetzner for new server jobs if ever needed. Do not alter automatic provenance markings or misrepresent synthetic scenes as real footage.
 
 ## Development
 
