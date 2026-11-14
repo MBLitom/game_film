@@ -196,14 +196,15 @@ function clearChoices(){
 function createChoices(beat){
  clearChoices();
  const optionData=BEATS[beat]?.choices||[];
- const spots=beat==="outfit"?[-2.40,0,2.40]:[-2.35,0,2.35];
- const atZ=beat==="outfit"?2.1:1.9;
+ const portrait=innerWidth/innerHeight<.76;
+ const spots=portrait?[-.84,0,.84]:beat==="outfit"?[-2.40,0,2.40]:[-2.35,0,2.35];
+ const atZ=portrait?2.25:beat==="outfit"?2.1:1.9;
  optionData.forEach((choice,i)=>{
   const root=beat==="outfit"
      ? dressOption(interactive,["#e78dc9","#8064dc","#e8b54c"][i],choice.label)
      : roomOption(interactive,["#ec9bbe","#6653d8","#e0b56b"][i],choice.label);
   root.position.set(spots[i],beat==="outfit"?.65:.63,atZ);
-  root.scale.setScalar(beat==="outfit"?.85:1.05);
+  root.scale.setScalar(portrait?.55:beat==="outfit"?.85:1.05);
   root.userData={beat,choice:choice.id,baseY:root.position.y};
   root.traverse(obj=>{if(obj.isMesh){obj.userData.choiceRoot=root;pickable.push(obj);}});
   stageOptions.push({root,choice,beat});
