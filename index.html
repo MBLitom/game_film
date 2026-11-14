@@ -2,181 +2,77 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#141126">
-  <meta name="description" content="Game Film: a free interactive movie-game prototype by MB Litom. Dress the actor, listen to their reactions and change the story.">
-  <title>Game Film · Theme Changed! · MB Litom</title>
-  <style>
-    :root{color-scheme:dark;--bg:#111023;--ink:#fff9ff;--muted:#c8c1dc;--panel:#24203c;--border:#514971;--hot:#ff71bd;--aqua:#77f0ed;--gold:#ffe280}
-    *{box-sizing:border-box} body{margin:0;background:radial-gradient(ellipse at 50% -20%,#5b367c 0%,#18132b 42%,#111023 85%);color:var(--ink);font:16px/1.45 system-ui,-apple-system,Segoe UI,sans-serif;min-height:100vh}
-    button{font:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent}button:focus-visible{outline:3px solid #ffe280;outline-offset:3px}
-    .shell{max-width:1060px;margin:auto;padding:20px 18px 32px}.header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:15px}
-    .brand{display:flex;align-items:center;gap:9px;font-weight:900;letter-spacing:.08em;font-size:15px}.logo{display:grid;place-items:center;width:34px;height:34px;border-radius:11px;background:linear-gradient(130deg,#ff73bf,#9b7aff);font-size:18px}
-    .tag{font-weight:700;font-size:11px;letter-spacing:.09em;color:#d1cbdf;border:1px solid #5b5075;border-radius:40px;padding:6px 10px}
-    h1{font-weight:900;line-height:1.1;font-size:clamp(31px,5.4vw,52px);letter-spacing:-.04em;margin:9px 0 8px}h1 span{color:var(--hot)}
-    .sub{color:#dbd5ed;max-width:710px;margin:0 0 19px;font-size:15px}.game{display:grid;grid-template-columns:minmax(0,1.14fr) minmax(320px,.86fr);gap:20px;align-items:stretch}
-    .screen{position:relative;isolation:isolate;overflow:hidden;border:2px solid #68548d;border-radius:23px;min-height:595px;background:radial-gradient(circle at 17% 25%,#ef67a9aa 0,transparent 22%),radial-gradient(circle at 78% 18%,#4899c8bb 0,transparent 24%),linear-gradient(160deg,#382a63 0%,#24234e 35%,#151c37 100%)}
-    .stars{position:absolute;inset:0;background-image:radial-gradient(#fff8 1px,transparent 2px),radial-gradient(#ffffff88 1px,transparent 2px);background-size:40px 59px,66px 74px;background-position:12px 2px,6px 19px;opacity:.45}
-    .rays{position:absolute;inset:-45% -40% 0;background:repeating-conic-gradient(from 18deg at 50% 100%,transparent 0deg 15deg,#ffffff07 17deg 20deg,transparent 23deg 42deg);animation:spin 40s linear infinite}
-    @keyframes spin{to{transform:rotate(360deg)}}.scene-top{position:absolute;z-index:3;left:18px;right:18px;top:16px;display:flex;align-items:center;justify-content:space-between;gap:8px}
-    .scene-pill{border:1px solid #fff7;background:#0f132aa8;backdrop-filter:blur(8px);border-radius:40px;padding:7px 12px;font-size:12px;font-weight:800;letter-spacing:.08em}
-    .audio{background:#0f132ab8;color:white;border:1px solid #c5b5ef7;border-radius:40px;padding:8px 12px;font-size:13px;font-weight:700}
-    .door{position:absolute;left:50%;transform:translateX(-50%);top:13%;width:77%;height:77%;border:15px solid #f6a1e9;border-bottom:0;border-radius:145px 145px 0 0;box-shadow:0 0 31px #ff99e76b,inset 0 0 18px #9b71ffa0;background:repeating-linear-gradient(90deg,#2a2140,#392a56 10px,#2b2145 21px)}
-    .door:before{content:"STARLIGHT CLUB";position:absolute;top:17%;left:12%;right:12%;padding:10px 3px;border:2px solid #ffde8f;border-radius:40px;color:#ffe7ac;text-shadow:0 0 9px #ffe7ac;text-align:center;letter-spacing:.1em;font-size:clamp(10px,2.4vw,15px);font-weight:900}
-    .character{position:absolute;z-index:2;top:15%;left:50%;transform:translateX(-50%);height:74%;max-width:92%;overflow:visible;filter:drop-shadow(0 11px 16px #0b092596);cursor:pointer;touch-action:manipulation}
-    .character.bounce{animation:bounce .4s ease}@keyframes bounce{50%{transform:translateX(-50%) translateY(-9px)}}
-    .sparkles{position:absolute;z-index:2;left:0;right:0;top:24%;font-size:31px;pointer-events:none;text-align:center;animation:pulse 2s infinite}@keyframes pulse{50%{opacity:.6;transform:scale(1.06)}}.speech{position:absolute;z-index:4;left:16px;right:16px;bottom:18px;min-height:105px;background:#14102cdd;border:1px solid #c9b9f87;border-radius:18px;padding:13px 17px;box-shadow:0 14px 25px #09071b6e;backdrop-filter:blur(12px)}
-    .speaker{color:var(--aqua);font-weight:900;font-size:11px;letter-spacing:.12em;text-transform:uppercase;margin-bottom:4px}.dialogue{font-weight:800;font-size:clamp(17px,2.4vw,22px);line-height:1.2}
-    .controls{border-radius:22px;border:1px solid #5b5175;background:#211c39e6;padding:20px;display:flex;flex-direction:column;gap:13px;min-height:595px}
-    .tiny{font-size:11px;letter-spacing:.13em;font-weight:900;color:var(--aqua);text-transform:uppercase}.step-title{font-weight:900;font-size:25px;line-height:1.15;margin:0}.instructions{color:var(--muted);font-size:14px;margin:0}.group{margin:0;border:0;padding:0}.group legend{font-size:13px;font-weight:900;margin:0 0 9px;color:#f8dcff}
-    .choices{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}.choice{border:2px solid #554b71;border-radius:16px;background:#342d51;color:#fff;min-height:79px;padding:8px 4px;font-size:12px;line-height:1.15;font-weight:800;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;text-align:center;transition:transform .16s,border-color .16s,background .16s}
-    .choice:hover{transform:translateY(-2px)}.choice[aria-pressed=true]{border-color:#94faee;background:#3b4862;box-shadow:0 0 0 2px #94faee19}.emoji{font-size:25px}
-    .primary{width:100%;margin-top:auto;border:0;border-radius:15px;padding:15px 15px;background:linear-gradient(120deg,#ff70be,#ffba78);color:#2a1133;font-size:16px;font-weight:950;box-shadow:0 8px 20px #ff67aa27}
-    .primary:hover{filter:brightness(1.07)}.note{font-size:12px;color:#d8d0e6;margin:0;text-align:center}.story-card{padding:13px 14px;border:1px solid #6a5c89;background:#2e2948;border-radius:14px;color:#f7eeff}
-    .story-card strong{display:block;color:#ffe289;margin-bottom:4px}.hidden{display:none!important}
-    .footer{margin-top:19px;display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;color:#a9a2bf;font-size:12px}.footer a{color:#c4f9f0}
-    .accessibility{font-size:12px;color:#b3acc9}.hint{padding:10px 13px;border-radius:12px;border:1px dashed #aa97ca;color:#d6d0e5;font-size:13px}
-    @media(max-width:800px){.shell{padding:12px 12px 24px}.game{grid-template-columns:1fr;gap:12px}.screen{min-height:480px;height:58vh;max-height:650px}.character{top:13%;height:77%}.controls{min-height:unset;padding:17px}.sub{margin-bottom:14px}.header{margin-bottom:11px}.choice{min-height:71px}.speech{min-height:93px}}
-    @media(max-width:380px){.screen{height:480px}.tag{font-size:10px}.choices{gap:6px}.choice{font-size:11px}.door{width:85%}}
-    @media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important}}
-  </style>
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#060812">
+  <meta name="description" content="Game Film — an immersive interactive film prototype by MB Litom. Real footage, occasional player decisions.">
+  <title>GAME FILM · The Theme Switch | MB Litom</title>
+  <link rel="stylesheet" href="./styles.css?v=2">
 </head>
 <body>
-<main class="shell">
-  <header class="header"><div class="brand"><span class="logo" aria-hidden="true">✦</span><span>GAME FILM <span style="color:#ff84c7">/</span> LITOM</span></div><span class="tag">PLAYABLE PROTOTYPE · v0.1</span></header>
-  <h1>A movie you <span>can touch.</span></h1>
-  <p class="sub">The Starlight Club keeps changing the party theme. Help Sky get dressed and watch the story change! All dialogue is in English.</p>
-  <div class="game">
-    <section class="screen" aria-label="Interactive movie scene">
-      <div class="stars" aria-hidden="true"></div><div class="rays" aria-hidden="true"></div><div class="door" aria-hidden="true"></div>
-      <div class="scene-top"><div class="scene-pill" id="chapter">EPISODE 01 · THE CLUB</div><button class="audio" id="audio" type="button" aria-pressed="false">🔇 Voice off</button></div>
-      <div class="sparkles" aria-hidden="true">✦　✧　✦</div>
-      <svg class="character" id="actor" viewBox="0 0 320 480" role="img" tabindex="0" aria-label="Sky, an interactive character. Tap their hair or outfit to get a reaction.">
-        <defs>
-          <linearGradient id="skin" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#ffdfc4"/><stop offset=".65" stop-color="#f6b998"/><stop offset="1" stop-color="#e38e78"/></linearGradient>
-          <linearGradient id="coat" x1="0" y1="0" x2="1" y2="1"><stop id="coat-a" stop-color="#7cdef5"/><stop id="coat-b" offset="1" stop-color="#2f80c6"/></linearGradient>
-          <linearGradient id="trousers" x1="0" y1="0" x2=".9" y2="1"><stop stop-color="#292f57"/><stop offset="1" stop-color="#171f3d"/></linearGradient>
-        </defs>
-        <ellipse cx="161" cy="460" rx="100" ry="15" fill="#090923" opacity=".5"/>
-        <path d="M128 319L121 435Q127 443 143 442L157 321" fill="url(#trousers)"/><path d="M169 320L181 441Q200 444 203 435L195 319" fill="url(#trousers)"/>
-        <path d="M120 431Q115 445 99 453Q97 465 125 463L147 457L147 436Z" fill="#f8f0ff"/><path d="M181 435L177 458Q186 465 214 464Q229 458 202 433Z" fill="#f8f0ff"/>
-        <path d="M128 200Q97 211 82 257L65 334Q68 341 83 340L115 280L122 326Q158 345 206 327L205 280L232 337Q245 342 255 333L243 257Q226 209 190 199Z" fill="url(#coat)" stroke="#665b86" stroke-width="2"/>
-        <path d="M148 198L158 235L171 199L174 310L155 317L145 200Z" fill="#fff0ff"/>
-        <path d="M128 200L145 195L161 237L143 274L121 208Z" fill="#ffffff35"/><path d="M193 200L175 194L161 237L181 275L209 207Z" fill="#130e3026"/>
-        <circle cx="162" cy="271" r="5" fill="#fff9f2"/><circle cx="161" cy="300" r="5" fill="#fff9f2"/>
-        <path d="M70 331Q68 349 85 349Q92 343 86 331Z" fill="url(#skin)"/><path d="M231 331Q229 349 246 350Q258 345 250 333Z" fill="url(#skin)"/>
-        <rect x="141" y="174" width="42" height="47" rx="17" fill="url(#skin)"/>
-        <path id="hair-back" d="M95 156Q76 36 156 26Q249 24 224 157L241 240Q216 254 199 213L116 213Q94 247 79 229Z" fill="#3e274a"/>
-        <ellipse cx="159" cy="120" rx="64" ry="89" fill="url(#skin)"/>
-        <path d="M97 112Q95 37 145 31Q205 19 223 89Q218 104 204 99Q174 91 151 72Q130 95 98 102Z" id="hair-front" fill="#3e274a"/>
-        <ellipse cx="137" cy="132" rx="6" ry="8" fill="#342540"/><ellipse cx="182" cy="132" rx="6" ry="8" fill="#342540"/>
-        <circle cx="139" cy="130" r="2" fill="#fff"/><circle cx="184" cy="130" r="2" fill="#fff"/>
-        <path d="M124 115Q136 108 145 115M174 115Q185 109 196 115" stroke="#59344d" stroke-width="4" stroke-linecap="round" fill="none"/>
-        <path d="M159 134L153 160Q162 164 169 158" fill="none" stroke="#d58977" stroke-width="3" stroke-linecap="round"/>
-        <ellipse id="blush-l" cx="115" cy="155" rx="13" ry="7" fill="#fb7391" opacity="0.17"/><ellipse id="blush-r" cx="205" cy="155" rx="13" ry="7" fill="#fb7391" opacity="0.17"/>
-        <path id="mouth" d="M141 175Q160 194 180 175" stroke="#a74467" stroke-width="5" fill="none" stroke-linecap="round"/>
-        <g id="accessory" aria-hidden="true"></g>
-      </svg>
-      <div class="speech" aria-live="polite" aria-atomic="true"><div class="speaker" id="speaker">SKY</div><div class="dialogue" id="dialogue">"We're going to the Starlight Club! Can you help me get ready?"</div></div>
-    </section>
-    <section class="controls" aria-label="Game controls">
-      <div class="tiny" id="act-label">EPISODE 01 · SCENE 01</div>
-      <h2 class="step-title" id="mission">The big night!</h2>
-      <p class="instructions" id="instruction">Sky and friends are going to a themed party. Help Sky choose the look!</p>
-      <div class="story-card" id="theme"><strong>✨ TONIGHT'S THEME</strong><span id="theme-text">Retro Spark — bright and playful!</span></div>
-      <div id="wardrobe">
-        <fieldset class="group"><legend>1 · Choose an outfit</legend><div class="choices" id="outfit-options">
-          <button class="choice" type="button" data-outfit="retro" aria-pressed="false"><span class="emoji">💖</span>Retro Spark</button>
-          <button class="choice" type="button" data-outfit="ocean" aria-pressed="true"><span class="emoji">💙</span>Ocean Pop</button>
-          <button class="choice" type="button" data-outfit="galaxy" aria-pressed="false"><span class="emoji">🌌</span>Galaxy Glow</button>
-        </div></fieldset>
-        <fieldset class="group" style="margin-top:14px"><legend>2 · Style the hair</legend><div class="choices" id="hair-options">
-          <button class="choice" type="button" data-hair="dark" aria-pressed="true"><span class="emoji">🖤</span>Midnight</button>
-          <button class="choice" type="button" data-hair="pink" aria-pressed="false"><span class="emoji">🩷</span>Pink Pop</button>
-          <button class="choice" type="button" data-hair="gold" aria-pressed="false"><span class="emoji">💛</span>Golden</button>
-        </div></fieldset>
-        <fieldset class="group" style="margin-top:14px"><legend>3 · Pick an accessory</legend><div class="choices" id="accessory-options">
-          <button class="choice" type="button" data-accessory="none" aria-pressed="true"><span class="emoji">✨</span>No hat</button>
-          <button class="choice" type="button" data-accessory="bow" aria-pressed="false"><span class="emoji">🎀</span>Big bow</button>
-          <button class="choice" type="button" data-accessory="crown" aria-pressed="false"><span class="emoji">👑</span>Crown</button>
-        </div></fieldset>
+<main id="film-app" aria-label="Immersive interactive film">
+  <video id="film" playsinline webkit-playsinline preload="metadata" muted disablepictureinpicture aria-label="Cinematic story footage">
+    <source src="./media/hair.webm" type="video/webm">
+  </video>
+  <canvas id="depth-canvas" aria-hidden="true"></canvas>
+  <div id="grade" aria-hidden="true"></div>
+  <header class="top-bar">
+    <a class="litom" href="https://mblitom.com" target="_blank" rel="noopener" aria-label="MB Litom website"><span class="litom-mark">L</span><span>GAME FILM</span></a>
+    <div class="top-right">
+      <span class="episode" id="episode-label">EPISODE 01</span>
+      <button id="sound-btn" class="icon-button" type="button" title="Toggle English narration" aria-label="Turn English narration on or off" aria-pressed="false">🔇</button>
+    </div>
+  </header>
+  <div id="scene-indicator" class="scene-indicator" aria-live="polite">THE THEME SWITCH</div>
+  <div id="subtitles" class="subtitles" role="status" aria-live="polite" aria-atomic="true"></div>
+
+  <section id="opening" class="opening" aria-label="Play film">
+    <div class="opening-inner">
+      <span class="opening-kicker">MB LITOM PRESENTS · INTERACTIVE FILM PROTOTYPE</span>
+      <h1>THE <em>THEME</em><br> SWITCH</h1>
+      <p>Meet the friends. Watch the story. When they need help, you're in the scene.</p>
+      <button id="start" class="big-button" type="button">▶ WATCH THE FILM</button>
+      <p class="opening-note">Real demonstration footage · original characters and film scenes are in development</p>
+    </div>
+  </section>
+
+  <section id="choice-overlay" class="choice-overlay" hidden aria-label="Interactive movie moment">
+    <div class="choice-shade"></div>
+    <div class="choice-panel">
+      <div class="choice-badge" id="choice-badge">YOUR TURN · HELP SKY</div>
+      <h2 id="choice-title">Choose a party look!</h2>
+      <p id="choice-description">Sky needs a style before the story can continue.</p>
+      <div class="choice-options" id="choice-options" role="group" aria-label="Choose one style">
+        <button type="button" class="look" data-look="rose"><span class="look-symbol">🎀</span><span>ROSE POP</span></button>
+        <button type="button" class="look" data-look="star"><span class="look-symbol">⭐</span><span>STAR GLOW</span></button>
+        <button type="button" class="look" data-look="royal"><span class="look-symbol">👑</span><span>ROYAL FUN</span></button>
       </div>
-      <div class="hint" id="hint">💡 Tip: Tap Sky's head or outfit to hear a reaction.</div>
-      <button class="primary" id="next" type="button">Let's go to the club! →</button>
-      <p class="note">No account · No ads · No tracking · English dialogue</p>
-    </section>
-  </div>
-  <footer class="footer"><span>© MB Litom · Experimental interaction demo. Illustrations are placeholders, not final film visuals.</span><a href="https://github.com/MBLitom/game_film" target="_blank" rel="noopener noreferrer">Source on GitHub ↗</a></footer>
+      <p class="touch-hint">Tap the film near the hairstyle for a gentle reaction.</p>
+      <button id="continue" class="continue-button" type="button" disabled>CONTINUE THE FILM →</button>
+    </div>
+  </section>
+
+  <section id="ending" class="ending" hidden aria-label="End of episode">
+    <div class="ending-inner">
+      <span class="opening-kicker">EPISODE 01 · STORY PREVIEW COMPLETE</span>
+      <h2>TO BE<br><em>CONTINUED...</em></h2>
+      <p>Real filmed performers, responsive styling and original scenes will replace the prototype footage.</p>
+      <button id="again" class="big-button" type="button">↻ WATCH AGAIN</button>
+      <button id="credits-btn" class="text-button" type="button">Footage credits & prototype notes</button>
+    </div>
+  </section>
+  <dialog id="credits">
+    <div class="credits-inner">
+      <h2>Prototype footage & limitations</h2>
+      <p>This is a full-screen cinematic interaction prototype, not a finished episode. The stock footage shows real people, but does not portray the fictional character “Sky”. The floating 3D accessory and English reactions are illustrative, not yet physically attached to a performer. No original film cast or synchronized facial reactions have been produced yet.</p>
+      <p><a href="https://commons.wikimedia.org/wiki/File:Hair_being_plaited_with_careful_skill.webm" target="_blank" rel="noopener">Hair being plaited with careful skill</a> by Leticia Nabunje; <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener">CC BY-SA 4.0</a>. Resized/replayed in the prototype; source footage unchanged.</p>
+      <p><a href="https://commons.wikimedia.org/wiki/File:DJ_mixes_music_while_people_enjoy_beats.webm" target="_blank" rel="noopener">DJ mixes music while people enjoy beats</a> by Leticia Nabunje; <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener">CC BY-SA 4.0</a>. Resized/replayed in the prototype; source footage unchanged.</p>
+      <p>Code © MB Litom. No account, tracking, ads, microphone or camera access. The prototype intentionally does not impersonate the people shown in the sample footage.</p>
+      <button type="button" id="credits-close" class="big-button">CLOSE</button>
+    </div>
+  </dialog>
+  <div class="film-credit" id="film-credit">PROTOTYPE · STOCK FOOTAGE · NOT THE FINAL CAST</div>
+  <div class="error-message" id="error" hidden role="alert"></div>
 </main>
-<script>
-(function(){
-  "use strict";
-  var stage=0, voice=false, outfit="ocean", hair="dark", accessory="none", touchCount=0;
-  var actor=document.getElementById("actor"), dialogue=document.getElementById("dialogue"), speaker=document.getElementById("speaker");
-  var phrases={
-    retro:["Oh, that pink jacket is fabulous!","This is so sparkly! I love it!"],
-    ocean:["It's blue! I like it, but is it party-ready?","Wow, ocean colors!"],
-    galaxy:["Ooh, I look like a star!","Galaxy Glow? Yes, please!"],
-    dark:["Midnight hair, cool!"],pink:["Pink hair! That's so fun!"],gold:["Whoa, golden hair!"],
-    none:["Let's keep it simple!"],bow:["This bow is huge! I love it!"],crown:["Your majesty has arrived!"]
-  };
-  function say(line, who){
-    speaker.textContent=who||"SKY";dialogue.textContent='"'+line+'"';
-    actor.classList.remove("bounce");void actor.getBoundingClientRect();actor.classList.add("bounce");
-    if(voice && "speechSynthesis" in window){
-      window.speechSynthesis.cancel();
-      var msg=new SpeechSynthesisUtterance(line);msg.lang="en-US";msg.rate=.94;msg.pitch=1.12;window.speechSynthesis.speak(msg);
-    }
-  }
-  function recolor(){
-    var colors={retro:["#ff9cda","#d24396"],ocean:["#81ddf2","#367ec8"],galaxy:["#af94ff","#5638ac"]};
-    document.getElementById("coat-a").setAttribute("stop-color",colors[outfit][0]);document.getElementById("coat-b").setAttribute("stop-color",colors[outfit][1]);
-    var h={dark:"#3e274a",pink:"#e35d99",gold:"#d79c36"}[hair];
-    document.getElementById("hair-front").setAttribute("fill",h);document.getElementById("hair-back").setAttribute("fill",h);
-    var a=document.getElementById("accessory");
-    a.innerHTML=accessory==="bow"?'<path d="M151 45Q108 5 110 54Q120 83 156 55Q179 93 210 71Q227 28 167 44Z" fill="#f876b7" stroke="#ad3d84" stroke-width="4"/><circle cx="160" cy="51" r="12" fill="#ffcee7"/>':accessory==="crown"?'<path d="M108 61L107 15L138 40L159 5L181 40L211 15L210 61Z" fill="#ffd86a" stroke="#e89e46" stroke-width="4"/><circle cx="159" cy="43" r="8" fill="#dd6be8"/>':'';
-  }
-  function buttons(group,key,value){
-    document.querySelectorAll("button[data-"+group+"]").forEach(function(b){b.setAttribute("aria-pressed",String(b.dataset[group]===value))});
-  }
-  ["outfit","hair","accessory"].forEach(function(group){
-    document.querySelectorAll("button[data-"+group+"]").forEach(function(b){
-      b.addEventListener("click",function(){
-        var value=b.dataset[group];if(group==="outfit")outfit=value;if(group==="hair")hair=value;if(group==="accessory")accessory=value;
-        buttons(group,group,value);recolor();say(phrases[value][Math.floor(Math.random()*phrases[value].length)]);
-      });
-    });
-  });
-  function controlsScene(){
-    var s=stage;
-    document.getElementById("act-label").textContent=s===0?"EPISODE 01 · SCENE 01":s===1?"EPISODE 01 · SCENE 02":"EPISODE 01 · FINALE";
-    document.getElementById("chapter").textContent=s===0?"SCENE 01 · GET READY":s===1?"SCENE 02 · PLOT TWIST":"FINALE · PARTY TIME";
-    document.getElementById("mission").textContent=s===0?"The big night!":s===1?"Oh no! Theme changed!":"We made it!";
-    document.getElementById("instruction").textContent=s===0?"Sky and friends are going to the club. Help Sky get ready!":s===1?"Surprise! The club has changed its theme to Galaxy Glow. Restyle Sky!":"Your choices changed the story. Play again and try new looks.";
-    document.getElementById("theme-text").textContent=s===0?"Retro Spark — bright and playful!":s===1?"Galaxy Glow — cosmic colors!":"Party complete! 🎉";
-    document.getElementById("wardrobe").classList.toggle("hidden",s===2);
-    document.getElementById("hint").classList.toggle("hidden",s===2);
-    document.getElementById("next").textContent=s===0?"Go to the club! →":s===1?"Try the club again! →":"Play again ↺";
-  }
-  document.getElementById("next").addEventListener("click",function(){
-    if(stage===0){stage=1;controlsScene();say("Wait! The theme changed? Now it's GALAXY GLOW?! Let's change my outfit!", "SKY");return}
-    if(stage===1 && outfit!=="galaxy"){say("I love your style! But tonight is Galaxy Glow. Can we try the galaxy jacket?","SKY");return}
-    if(stage===1){stage=2;controlsScene();say("You did it! We're in! This is the best night ever!", "SKY");return}
-    stage=0;outfit="ocean";hair="dark";accessory="none";recolor();["outfit","hair","accessory"].forEach(function(g){buttons(g,g,{outfit:outfit,hair:hair,accessory:accessory}[g])});controlsScene();say("We're going to the Starlight Club! Can you help me get ready?","SKY");
-  });
-  actor.addEventListener("click",function(e){
-    var rect=actor.getBoundingClientRect(),relative=(e.clientY-rect.top)/rect.height;touchCount++;
-    if(relative<.41){document.getElementById("blush-l").setAttribute("opacity","0.45");document.getElementById("blush-r").setAttribute("opacity","0.45");say(touchCount%3===0?"Ouch! Easy with my hair, please!":"Hey! That tickles! Be gentle!", "SKY")}
-    else say("Are we trying another outfit? Let's make it amazing!","SKY");
-  });
-  actor.addEventListener("keydown",function(e){if(e.key==="Enter"||e.key===" "){e.preventDefault();say("Hey! That tickles! Be gentle!","SKY")}});
-  document.getElementById("audio").addEventListener("click",function(){
-    voice=!voice;this.setAttribute("aria-pressed",String(voice));this.textContent=voice?"🔊 Voice on":"🔇 Voice off";
-    if(!voice && "speechSynthesis" in window)window.speechSynthesis.cancel();
-    if(voice)say("Hello! I'm Sky. Let's get ready for the party!","SKY");
-  });
-  recolor();controlsScene();
-})();
-</script>
+<script type="module" src="./main.js?v=2"></script>
 </body>
 </html>
