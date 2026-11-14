@@ -35,6 +35,7 @@ async function main(){
   const page=await context.newPage();
   page.on("pageerror",err=>bugs.push(err.message));
   page.on("console",msg=>{if(msg.type()==="error")bugs.push("console: "+msg.text());});
+  page.on("response",res=>{if(res.status()>=400)bugs.push("HTTP "+res.status()+" "+res.url());});
   await page.goto(URL,{waitUntil:"domcontentloaded",timeout:30000});
   await waitState(page,"ready",70000);
   const actors=await page.evaluate(()=>window.__GF_TEST__.actors());
