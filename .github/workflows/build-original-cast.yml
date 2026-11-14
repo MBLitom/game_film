@@ -12,7 +12,7 @@ permissions:
 
 concurrency:
   group: game-film-cast-generation
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   build-cast:
@@ -36,20 +36,11 @@ jobs:
           git -C /tmp/ara-cast fetch --quiet --depth 1 origin fc0cf3fdc8f845420b01674e9bbbd61f460255c9
           git -C /tmp/ara-cast checkout --quiet --detach FETCH_HEAD
           test "$(git -C /tmp/ara-cast rev-parse HEAD)" = fc0cf3fdc8f845420b01674e9bbbd61f460255c9
-      - name: Install and build CC0 MakeHuman character assets
+      - name: Download official prebuilt Ara CC0 geometry, clothes, face and hair packs
         working-directory: /tmp/ara-cast
         run: |
           npm ci --no-audit --no-fund
-          # Download the official CC0 pack using curl's system networking stack.
-          # Node's undici fetch fails to connect to both original and mirror domains on runner.
-          mkdir -p vendor/dl vendor/sys
-          curl --ipv4 --fail --location --retry 3 --retry-delay 10 \
-            --connect-timeout 35 --max-time 1200 \
-            https://files2.makehumancommunity.org/asset_packs/makehuman_system_assets/makehuman_system_assets_cc0.zip \
-            --output vendor/dl/sys.zip
-          unzip -qq vendor/dl/sys.zip -d vendor/sys
-          test -d vendor/sys/skins
-          npm run setup-assets
+          python3 "$GITHUB_WORKSPACE/scripts/fetch-ara-assets.py"
       - name: Export original SKY and EMMA rigged GLB models
         working-directory: /tmp/ara-cast
         run: |
