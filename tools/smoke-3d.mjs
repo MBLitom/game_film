@@ -8,7 +8,7 @@ import {spawn} from "node:child_process";
 import {mkdir} from "node:fs/promises";
 import assert from "node:assert/strict";
 
-const port=8177, URL="http://127.0.0.1:"+port+"/3d/?smoke=1";
+const port=8177, URL="http://127.0.0.1:"+port+"/?smoke=1";
 const server=spawn("python3",["-m","http.server",String(port),"--bind","127.0.0.1"],{stdio:"ignore"});
 let browser;
 const bugs=[];
@@ -22,7 +22,7 @@ async function clickChoice(page,id){
   const bounds=page.viewportSize();
   if(selected.x<2||selected.x>bounds.width-2||selected.y<2||selected.y>bounds.height-2)
     throw Error("Physical prop is offscreen "+JSON.stringify(selected));
-  await page.mouse.click(selected.x,selected.y);
+  await page.touchscreen.tap(selected.x,selected.y);
 }
 async function main(){
   await mkdir("screenshots",{recursive:true});
@@ -37,6 +37,7 @@ async function main(){
   page.on("console",msg=>{if(msg.type()==="error")bugs.push("console: "+msg.text());});
   page.on("response",res=>{if(res.status()>=400)bugs.push("HTTP "+res.status()+" "+res.url());});
   await page.goto(URL,{waitUntil:"domcontentloaded",timeout:30000});
+  await page.waitForURL(/\/3d\/\?smoke=1/,{timeout:10000});
   await waitState(page,"ready",70000);
   const actors=await page.evaluate(()=>window.__GF_TEST__.actors());
   assert.equal(actors.loaded,true);
