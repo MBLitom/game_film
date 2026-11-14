@@ -1,0 +1,71 @@
+name: GAME FILM - Build original 3D cast (free)
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/build-original-cast.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: game-film-cast-generation
+  cancel-in-progress: false
+
+jobs:
+  build-cast:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - name: Checkout GAME FILM
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - name: Use included GitHub runner only - no billed infrastructure
+        run: |
+          echo 'Three GLB actors from original parameters. No paid APIs, no Oracle or Hetzner.'
+          node --version
+          df -h .
+      - name: Download MIT-licensed Ara 3D Gen at pinned source commit
+        run: |
+          mkdir -p /tmp/ara-cast
+          git -C /tmp/ara-cast init --quiet
+          git -C /tmp/ara-cast remote add origin https://github.com/olatunde85/3d-gen.git
+          git -C /tmp/ara-cast fetch --quiet --depth 1 origin fc0cf3fdc8f845420b01674e9bbbd61f460255c9
+          git -C /tmp/ara-cast checkout --quiet --detach FETCH_HEAD
+          test "$(git -C /tmp/ara-cast rev-parse HEAD)" = fc0cf3fdc8f845420b01674e9bbbd61f460255c9
+      - name: Install and build CC0 MakeHuman character assets
+        working-directory: /tmp/ara-cast
+        run: |
+          npm ci --no-audit --no-fund
+          npm run setup-assets
+      - name: Export original SKY and EMMA rigged GLB models
+        working-directory: /tmp/ara-cast
+        run: |
+          mkdir -p "$GITHUB_WORKSPACE/public/models"
+          for person in sky_preparation sky_star emma; do
+            npm run export -- --params "$GITHUB_WORKSPACE/assets/actors/${person}.params.json" --formats glb --detail medium --out "$GITHUB_WORKSPACE/public/models"
+          done
+          ls -lh "$GITHUB_WORKSPACE/public/models"
+      - name: Verify 3D geometry and character skeleton
+        run: |
+          node scripts/assert-cast.mjs public/models/*.glb
+      - name: Publish generated cast to main (no other branch)
+        run: |
+          git config user.name "game-film-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/models/*.glb
+          if git diff --cached --quiet; then
+            echo "Cast assets already match source. Nothing to publish."
+          else
+            git commit -m "Add original CC0-based rigged 3D cast for film scenes [skip ci]"
+            git push origin HEAD:main
+          fi
+      - name: Generate temporary download for inspection
+        uses: actions/upload-artifact@v4
+        with:
+          name: game-film-original-cast
+          path: public/models/*.glb
+          retention-days: 1
