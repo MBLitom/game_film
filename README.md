@@ -26,6 +26,10 @@ https://mblitom.github.io/game_film/
 - `vendor/`: local Three.js modules, released under their own MIT license
 - `media/`: temporary demonstration footage (WebM sources and MP4 mobile-compatible derivatives) under CC BY-SA 4.0, **not under this repository's MIT code license**
 
+## Infrastructure
+
+**New-project server placement: existing Hetzner**, not Oracle. The current static demo is temporarily delivered through GitHub Pages and does not require a server. If backend hosting or compute becomes necessary, use the existing Hetzner environment only after capacity checks, with **0 EUR in new costs or plan changes** without approval. Oracle is excluded from GAME FILM workloads. See [infrastructure policy](docs/ZERO_COST_INFRASTRUCTURE.md).
+
 ## Development
 
 Serve the directory through any static HTTP server, e.g. `python3 -m http.server 8000`, and open `http://localhost:8000` (file:// cannot load JavaScript modules reliably). No build tools or keys required.
