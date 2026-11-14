@@ -47,6 +47,7 @@ const subtitle=(text)=>{$("subtitle").textContent=text||"";};
 
 function narrate(text,actor="SKY"){
   subtitle(actor+": "+text);
+  (actor==="EMMA"?emma:sky)?.speakMotion(text);
   if(!voiceOn||!("speechSynthesis" in window))return;
   try {
     window.speechSynthesis.cancel();
@@ -213,7 +214,14 @@ function createChoices(beat){
 }
 
 function cameraShot(name){
- const shots={
+ const portrait=innerWidth/innerHeight<.76;
+ const shots=portrait?{
+  intro:{eye:[0,2.44,7.45],target:[0,1.26,-.4]},
+  outfit:{eye:[0,2.36,6.9],target:[0,1.28,.20]},
+  room:{eye:[0,2.65,7.65],target:[0,1.5,-.35]},
+  feelings:{eye:[0,2.30,7.15],target:[0,1.27,-.5]},
+  finale:{eye:[-1.25,2.76,7.45],target:[0,1.38,-.5]}
+ }:{
   intro:{eye:[0,2.4,9.8],target:[0,1.75,-.7]},
   outfit:{eye:[0,2.42,8.8],target:[0,1.7,.1]},
   room:{eye:[0,3.05,10.6],target:[0,2.2,-.5]},
@@ -224,6 +232,7 @@ function cameraShot(name){
  targetPos.set(...shot.eye);
  targetFocus.set(...shot.target);
 }
+
 class Performer{
  constructor(glb,name){
   this.name=name;
@@ -249,6 +258,22 @@ class Performer{
   this.model.scale.setScalar(scale);
   this.model.position.y=-bounds.min.y*scale;
   this.idleLook=0;
+  this.speechEnd=0;
+  this.blinkPhase=Math.random()*2;
+  this.faceMeshes=[];
+  this.model.traverse(obj=>{
+   if(obj.morphTargetDictionary && obj.morphTargetInfluences)this.faceMeshes.push(obj);
+  });
+ }
+ setFace(key,value){
+  for(const obj of this.faceMeshes){
+   const idx=obj.morphTargetDictionary?.[key];
+   if(idx!==undefined)obj.morphTargetInfluences[idx]=Math.max(0,Math.min(1,value));
+  }
+ }
+ speakMotion(words){
+  // Approximate browser-side acting; this is NOT phoneme-aligned speech.
+  this.speechEnd=performance.now()/1000+Math.max(1.4,Math.min(7,words.split(/\\s+/).length*.39));
  }
  place(x,z,yaw=0){this.root.position.set(x,0,z);this.root.rotation.y=yaw;return this;}
  gesture(name){
@@ -262,6 +287,14 @@ class Performer{
   this.mixer?.update(dt);
   this.root.position.y=Math.sin(t*2.2+(this.name==="EMMA"?2:0))*.012;
   this.root.rotation.y=Math.sin(t*.46+(this.name==="EMMA"?1.2:0))*.044;
+  const blink=Math.pow(Math.max(0,Math.sin(t*1.7+this.blinkPhase)),24);
+  this.setFace("eyeBlinkLeft",blink);
+  this.setFace("eyeBlinkRight",blink);
+  const speaking=performance.now()/1000<this.speechEnd;
+  const jaw=speaking?.12+.36*Math.abs(Math.sin(t*11.3+this.blinkPhase)):0;
+  this.setFace("jawOpen",jaw);
+  this.setFace("viseme_aa",speaking?.12+.26*Math.abs(Math.sin(t*5.9)) : 0);
+  this.setFace("mouthSmile",this.name==="EMMA"?.17:.22);
  }
  dispose(){
   this.mixer?.stopAllAction();
@@ -416,7 +449,7 @@ function resize(){
  const w=innerWidth,h=innerHeight;
  renderer.setSize(w,h,false);
  camera.aspect=w/h;
- camera.fov=w/h<.7?48:37;camera.updateProjectionMatrix();
+ camera.fov=w/h<.7?39:37;camera.updateProjectionMatrix();
 }
 addEventListener("resize",resize,{passive:true});resize();
 
